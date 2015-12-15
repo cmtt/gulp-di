@@ -1,0 +1,46 @@
+{
+  "name": "gulp-di",
+  "version": "0.0.0",
+  "description": "Dependency injection framework for modular Gulp tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": {
+    "name": "Matthias Thoemmes",
+    "email": "git@gmx.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cmtt/gulp-di.git"
+  },
+  "keywords": [
+    "gulp",
+    "build",
+    "system",
+    "framework",
+    "tool",
+    "asset",
+    "pipeline",
+    "dependency",
+    "injection",
+    "DI",
+    "dependency injection",
+    "gulpplugin"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "extract-comments": "^0.8.6",
+    "findup-sync": "^0.3.0",
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-load-plugins": "*",
+    "jshint": "^2.8.0",
+    "pad": "^1.0.0",
+    "parse-function": "^2.0.1",
+    "require-dir": "^0.3.0"
+  },
+  "devDependencies": {
+    "gulp-mocha": "^2.2.0"
+  }
+}
