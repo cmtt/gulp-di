@@ -1,6 +1,1 @@
-- Incorporate minification-safe syntax for DI
 - Add more documentation and usage examples
-- Add a method to defer injected modules which might depend on others.
-- Cross-check the naming of inject/injectValue and provide - they might be very
-  confusing.
-- Document "throw" option

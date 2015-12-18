@@ -4,7 +4,7 @@ module.exports = function (gulp, paths, mocha) {
 
     // Runs the unit tests using Mocha
 
-    return gulp.src(paths.test)
+    return gulp.src(paths.specs)
     .pipe(mocha());
   });
 

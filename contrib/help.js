@@ -1,7 +1,10 @@
-module.exports = function HelpTask (gulp, Package) {
+/*jshint -W089 */
+
+module.exports = function HelpTask (gulp, Package, log, chalk) {
 
   /**
    * Modifies the gulp.task() function and builds a list of all tasks.
+   *
    * Adds a Gulp "help" task which lists them with additional information from
    * function comments.
    *
@@ -9,7 +12,6 @@ module.exports = function HelpTask (gulp, Package) {
    *
    * ````js
    * module.exports = function (gulp) {
-   *
    *   // Copies ./README.md to ./tmp
    *
    *   return gulp.src('./README.md')
@@ -20,7 +22,7 @@ module.exports = function HelpTask (gulp, Package) {
    * This module needs to be injected before each successive require('gulp')
    * as it overwrites the "gulp.task" function.
    *
-   * As such modifications might lead to unexpected behaviors, this module is
+   * As such modifications might lead to unexpected behavior, this module is
    * experimental.
    */
 
@@ -29,6 +31,15 @@ module.exports = function HelpTask (gulp, Package) {
   var extractComments = require('extract-comments');
   var _task = gulp.task;
   var taskInfo = {};
+  var DEBUG = this.options.DEBUG;
+
+  if (DEBUG) {
+    log('Wrapping gulp.task() "gulp help" task...');
+  }
+
+  // Allows to use this hashmap as dependency
+
+  this.provide('taskInfo', taskInfo);
 
   /**
    * Wraps the gulp.task() method, registeres information about the provided
@@ -47,25 +58,39 @@ module.exports = function HelpTask (gulp, Package) {
       deps = [];
     }
 
+    var entry = null;
+
     if (typeof fn === 'function') {
       var info = parseFn(fn);
-      var entry = {
+      entry = {
         name : id
       };
       entry.description = util.format('Runs the %s task (no description)', id);
-      taskInfo[id] = entry;
       if (typeof info === 'object') {
-        var comments = extractComments(info.body, { first : true});
+        var comments = extractComments(info.body, {first : true});
         if (comments.length) {
           var comment = comments[0];
           entry.description = comment.lines || [comment.value];
         }
       }
     } else if (id === 'default') {
-      taskInfo[id] = {
+      entry = {
         name : 'default',
         description : 'Runs the default tasks: ' + deps.join(' ')
       };
+    }
+
+
+    if (entry) {
+      if (deps.length) entry.deps = deps;
+      if (DEBUG) {
+        var line = ['Adding', chalk.cyan(entry.name), 'task'];
+        if (deps.length) {
+          line.push(' - depending on ',chalk.magenta(deps.join(' ')));
+        }
+        log.apply(chalk, line);
+      }
+      taskInfo[id] = entry;
     }
 
     return _task.apply(gulp, args);
@@ -74,7 +99,6 @@ module.exports = function HelpTask (gulp, Package) {
   // Registers the "help" task.
 
   gulp.task('help', function () {
-
     /* Prints an overview over all available Gulp tasks. */
 
     var util = require('util');
@@ -84,6 +108,7 @@ module.exports = function HelpTask (gulp, Package) {
     var paddingStr = new Array(padding).join(' ');
 
     lines.push(' ' + Package.name + ' ' + Package.version, '');
+
     if (Package.description && Package.description.length) {
       lines.push(' ' + Package.description, '');
     }
@@ -92,10 +117,7 @@ module.exports = function HelpTask (gulp, Package) {
     var taskLengths = taskIds.map(function (id) { return id.length; });
     var maxLength = Math.max.apply(Math, taskLengths);
 
-    var l = taskIds.length;
-
-    for (var i = 0; i < l; ++i) {
-      var key = taskIds[i];
+    for (var key in taskInfo) {
       var entry = taskInfo[key];
       var paddingLength = maxLength;
       var str = new Array(paddingLength+2).join(' ');
@@ -115,6 +137,7 @@ module.exports = function HelpTask (gulp, Package) {
      * @method mapDescription
      * @param {string[]} lines
      * @return {string[]}
+     * @private
      */
 
     function mapDescription(lines) {

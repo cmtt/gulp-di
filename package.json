@@ -1,7 +1,7 @@
 {
   "name": "gulp-di",
   "version": "0.0.0",
-  "description": "Dependency injection framework for modular Gulp tasks",
+  "description": "Dependency injection framework for the Gulp streaming build system",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -30,17 +30,19 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "chalk": "^1.1.1",
     "extract-comments": "^0.8.6",
     "findup-sync": "^0.3.0",
-    "gulp": "^3.9.0",
-    "gulp-jshint": "^2.0.0",
+    "gulp": "*",
+    "gulp-jshint": "*",
     "gulp-load-plugins": "*",
+    "gulp-util": "*",
     "jshint": "^2.8.0",
     "pad": "^1.0.0",
     "parse-function": "^2.0.1",
     "require-dir": "^0.3.0"
   },
   "devDependencies": {
-    "gulp-mocha": "^2.2.0"
+    "gulp-mocha": "*"
   }
 }

@@ -1,25 +1,28 @@
 /**
- * This is currently solely an exmample on how you could use
- * with gulp-di in many ways.
+ * This is currently solely an example on how you could use
+ * gulp-di in many ways.
  */
 
 var gulp = require('gulp');
 var di = require('./')(gulp, {
-  throw : true
+  DEBUG: true
 })
-.injectValue('paths',function (basePath) {
+.module('paths',function (basePath) {
   return {
-    test : basePath('test', '**/*.js'),
+    specs : basePath('specs', '**/*.js'),
     src : [
       basePath('index.js'),
       basePath('lib/**/*.js'),
       basePath('contrib/**/*.js')
+    ],
+    tasks : [
+      basePath('tasks/**/*.js')
     ]
   };
 })
 .tasks('./tasks')
 // .task(function (noDef) {
-  // This should fail as long as the "throw" option is not set to false.
+//   // This should fail if you un-comment it
 // })
 .resolve();
 
@@ -27,10 +30,12 @@ var di = require('./')(gulp, {
 // In order to use this feature, you need to call gulp.task AFTER
 // gulp-di though.
 
-gulp.task('noop', function () {
+gulp.task('wait', function (done) {
   /**
-   * Does nothing but showing this
+   * Waits for one second, features a
    * multi-line comment (see Gulpfile.js).
    */
+  di.inject(function () {
+    setTimeout(done, 1e3);
+  });
 });
-
