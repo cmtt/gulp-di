@@ -82,7 +82,7 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
 
 
     if (entry) {
-      if (deps.length) entry.deps = deps;
+      entry.deps = deps;
       if (DEBUG) {
         var line = ['Adding', chalk.cyan(entry.name), 'task'];
         if (deps.length) {

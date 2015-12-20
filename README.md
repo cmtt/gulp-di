@@ -16,7 +16,7 @@ See below for further examples!
 ````bash
   $ npm install --save gulp-di
 ````
-# Basic refactoring
+# Example: Basic refactoring
 
 Instead of declaring all gulp tasks in a single file, gulp-di allows you to
 take a more modular approach. You can separate your stream definitions from
@@ -57,14 +57,13 @@ module.exports = function (gulp, imagesPath) {
 Notice that the function uses the "imagePath" constant. Such constants can
 be defined in your Gulpfile files in order to separate them from the tasks.
 
-Thus, you might assemble your tasks from other declarations and build much more
-flexible tasks.
+Thus, you can now use all of your Functional programming skills with Gulp and
+**assemble** your tasks from other declarations and build much more
+flexible and re-usable tasks.
 
-Then, you can reduce your Gulpfile to the following lines. We will declare
-additionally the "imagePath" constant which is being used in our "images" task.
-
-This separation allows to assemble Gulp tasks conditionally by separating such
-data from your streams.
+gulp-di should help you to reduce your Gulpfile's complexity.
+In this example, we will declare additionally the "imagePath" constant which is
+being used in our "images" task.
 
 ````js
 /* gulpfile.js (refactored version) */
@@ -80,9 +79,8 @@ Additionally, you can now "inject" arbitrary values into your functions, e. g.
 run-time configurations, asynchronous methods for usage with Gulp's asynchronous
 API, constants etc.
 
-The following example shows how you could assemble tasks by from constants and
-modules.
-
+The following example uses constants and modules in order to compose a helper
+function.
 
 ````js
 /* gulpfile.js (refactored version) */
@@ -90,11 +88,11 @@ modules.
 var gulp = require('gulp');
 var di = require('gulp-di')(gulp);
 .tasks('./tasks')
-.provide('sourcePath', 'src')
-.module('extensionPath', function (sourcePath) {
-  return function (extname) {
-    return sourcePath + '/**/*.'  + extname;
-  };
+.provide('sourcePath', 'src')                    // Provide a string constant.
+.module('extensionPath', function (sourcePath) { // Add a module providing a
+  return function (extname) {                    // helper function to get a
+    return sourcePath + '/**/*.'  + extname;     // glob for the specified
+  };                                             // extension name.
 })
 .task(function (gulp, extensionPath) {
   gulp.task('copy-images', function () {
@@ -112,10 +110,11 @@ You can use the following dependencies in your modules and tasks.
 | Name     |  Type    |  Description                                  |
 |----------|----------|-----------------------------------------------|
 | basePath | Function | Resolves a path relative to your project path |
+| chalk    | Object   | [chalk](https://www.npmjs.com/package/chalk) for using colors when logging           |
 | gulp     | Object   | The gulp instance                             |
+| log      | Function | [gulp-util](https://www.npmjs.com/package/gulp-util)'s log                                 |
 | Package  | Object   | package.json as object                        |
 | taskInfo | Object   | infos about task functions (experimental)     |
-| log      | Function | gulp-util log                                 |
 
 In addition, all Gulp modules which are installed in your package.json are
 available in your modules, driven by [gulp-load-plugins](https://www.npmjs.com/package/gulp-load-plugins).
@@ -130,20 +129,26 @@ package.json) plugin using ...
 ... it will become available as dependency in each module file:
 
 ````js
+// tasks/concat-texts.js
 module.exports = function (gulp, concat) {
+  /* Concatenates all *.txt files from src/ to public/result.txt */
   return gulp.src('src/**/*.txt')
-  .pipe(concat())
-  .pipe(gulp.dest('/tmp/result.txt'));
+  .pipe(concat('result.txt'))
+  .pipe(gulp.dest('public/'));
 };
 ````
+Please read the API notes below for configuring a pattern for packages which
+do not start with "gulp-" or "gulp.*".
+
 # API
 
 ## GulpDI(_object_ gulp, _object_ options)
 
-Creates a new GulpDI instance. The first argument must always be the required
-gulp module.
+Creates a new GulpDI instance. The first argument must always be the your
+existing gulp module from your Gulpfile.
 
-If you specify options, these will be passed to [gulp-load-plugins](https://www.npmjs.com/package/gulp-load-plugins) under the hood.
+If you specify options, these will be passed to [gulp-load-plugins](https://www.npmjs.com/package/gulp-load-plugins) under the hood (but "lazy" and "camelize" cannot
+be configured at the moment).
 
 ```js
 var di = GulpDI({
@@ -187,8 +192,8 @@ You can also use a hashmap as following:
 ````js
 di.task({
   assets : function (gulp) {
-    return gulp.src('src/**/*.png')
-    .pipe(gulp.dest('public/'));
+    /* Copies all *.png images from src/ to public/ */
+    return gulp.src('src/**/*.png').pipe(gulp.dest('public/'));
   }
 });
 ````
@@ -252,10 +257,7 @@ You could f.e. access the "options" object in your function as following:
 
 ````js
 di.task(function () {
-  var DEBUG = this.options.DEBUG;
-  if (DEBUG) {
-    console.log('Debug is enabled');
-  }
+  if (this.options.DEBUG) { console.log('Debug is enabled'); }
 });
 ````
 
@@ -294,12 +296,13 @@ var gulpDi = require('gulp-di');
 var di = gulpDi()
 .task(function (gulp, taskInfo, log, chalk) {
   gulp.task('my-help', function () {
+    /* Logs basic information about tasks. */
     for (var name in taskInfo) {
       var entry = taskInfo[name];
       log(chalk.magenta(name), 'with dependencies',  entry.deps);
     }
   });
-});
+})
 .resolve();
 ````
 
@@ -333,6 +336,8 @@ di.task(function (webpackStream) {
   });
 });
 
+di.resolve();
+
 ````
 
 ## Is it possible to add tasks asynchronously?
@@ -353,7 +358,7 @@ var di = require('gulp-di')(gulp, {
   rename : {
     webpackStream : 'gulpWebpack'
   }
-})
+});
 ````
 
 ### Using a ``renameFn``:
