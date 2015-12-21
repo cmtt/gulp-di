@@ -7,19 +7,7 @@ var gulp = require('gulp');
 var di = require('./')(gulp, {
   DEBUG: true
 })
-.module('paths',function (basePath) {
-  return {
-    specs : basePath('specs', '**/*.js'),
-    src : [
-      basePath('index.js'),
-      basePath('lib/**/*.js'),
-      basePath('contrib/**/*.js')
-    ],
-    tasks : [
-      basePath('tasks/**/*.js')
-    ]
-  };
-})
+.modules('./modules')
 .tasks('./tasks')
 // .task(function (noDef) {
 //   // This should fail if you un-comment it

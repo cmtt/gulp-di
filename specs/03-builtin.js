@@ -1,15 +1,14 @@
-/*global describe:false, beforeEach:false, it:false, assert:false, basePath:false */
+/*global describe:false, beforeEach:false, it:false, assert:false,
+basePath:false, GulpDI:false, getDiInstance:false, getGulpInstance:false */
 
 describe('GulpDI', function () {
 
-  var GulpDI = require(basePath('index.js'));
   var gulp = null;
   var di = null;
 
   beforeEach(function () {
-    delete require.cache[require.resolve('gulp')];
-    gulp = require('gulp');
-    di = new GulpDI(gulp, { pattern: [], someTestSetting : '1' });
+    gulp = getGulpInstance();
+    di = new GulpDI(gulp, { DEBUG: true, pattern: [], someTestSetting : '1' });
   });
 
   it('gulp', function (done) {

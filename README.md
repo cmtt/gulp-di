@@ -201,8 +201,8 @@ di.task({
 ## .module(_string_ name,_function_ fn)
 
 Adds a module with the given name. In contrast to a task, a module has a name
-and its return value will be provided - thus, modules can be injected to tasks
-as well as other other modules.
+and its return value will be provided - thus, modules can be injected into tasks
+as well as your constants.
 
 You can provide a hashmap, too.
 
@@ -236,7 +236,8 @@ When using DI, you can set values on your instance to arbitrary values. They
 will become available in your module files.
 
 ````js
-var di = require('gulp-di')();
+var gulp = require('gulp');
+var di = require('gulp-di')(gulp, { DEBUG: false });
 di.provide('PI', Math.PI);
 di.provide('RAD_TO_DEG', 180 / Math.PI);
 ````
@@ -356,14 +357,14 @@ can change the assigned name for arbitrary modules.
 ````js
 var di = require('gulp-di')(gulp, {
   rename : {
-    webpackStream : 'gulpWebpack'
+    webpackStream : 'webpack'
   }
 });
 ````
 
 ### Using a ``renameFn``:
 ````js
-var replacements = { webpackStream : 'gulpWebpack'};
+var replacements = { webpackStream : 'webpack'};
 var di = require('gulp-di')(gulp, {
   renameFn : function(key) { return replacements[key]; }
 });
@@ -375,6 +376,6 @@ var di = require('gulp-di')(gulp, {
 
   Initial release, incorporating Resolver and tests from [dijs](https://www.npmjs.com/package/dijs).
 
-# License
+# Licence
 
 MIT

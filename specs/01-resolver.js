@@ -1,4 +1,5 @@
-/*global describe:false, beforeEach:false, it:false, assert:false, basePath:false */
+/*global describe:false, beforeEach:false, it:false, assert:false,
+basePath:false, GulpDI:false, getDiInstance:false, getGulpInstance:false */
 
 describe('Resolver', function () {
 
@@ -20,7 +21,11 @@ describe('Resolver', function () {
     assert.equal(d.length, 2);
   });
 
-  it('resolves in a correct order with functions', function () {
+  it('resolves returns an empty array', function () {
+    assert.deepEqual(d.resolve(), []);
+  });
+
+  it('resolves in a correct order', function () {
     d.provide('test', ['one', 'two', 'three']);
     d.provide('two', []);
     d.provide('one', []);
