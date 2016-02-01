@@ -31,6 +31,7 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
   var extractComments = require('extract-comments');
   var _task = gulp.task;
   var taskInfo = {};
+  var RGX_LF = /\r\n|\r|\n/g;
   var DEBUG = this.options.DEBUG;
 
   if (DEBUG) {
@@ -70,7 +71,12 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
         var comments = extractComments(info.body, {first : true});
         if (comments.length) {
           var comment = comments[0];
-          entry.description = comment.lines || [comment.value];
+          var lines = comment.raw
+          .split(RGX_LF)
+          .map(function (line) {
+            return line.replace(/(\ )*(\*|\/+)/g, '');
+          });
+          entry.description = lines;
         }
       }
     } else if (id === 'default') {

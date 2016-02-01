@@ -107,14 +107,16 @@ var di = require('gulp-di')(gulp);
 
 You can use the following dependencies in your modules and tasks.
 
-| Name     |  Type    |  Description                                  |
-|----------|----------|-----------------------------------------------|
-| basePath | Function | Resolves a path relative to your project path |
-| chalk    | Object   | [chalk](https://www.npmjs.com/package/chalk) for using colors when logging           |
-| gulp     | Object   | The gulp instance                             |
-| log      | Function | [gulp-util](https://www.npmjs.com/package/gulp-util)'s log                                 |
-| Package  | Object   | package.json as object                        |
-| taskInfo | Object   | infos about task functions (experimental)     |
+| Name         |  Type    |  Description                                  |
+|--------------|----------|-----------------------------------------------|
+| basePath     | Function | Resolves a path relative to your project path |
+| chalk        | Object   | [chalk](https://www.npmjs.com/package/chalk) for using colors when logging |
+| gulp         | Object   | The gulp instance                             |
+| gutil        | Object   | [gulp-util](https://www.npmjs.com/package/gulp-util)|
+| log          | Function | [gulp-util](https://www.npmjs.com/package/gulp-util)'s log|
+| Package      | Object   | package.json as object                        |
+| runningTasks | Array    | currently running gulp tasks (experimental)   |
+| taskInfo     | Object   | infos about task functions (experimental)     |
 
 In addition, all Gulp modules which are installed in your package.json are
 available in your modules, driven by [gulp-load-plugins](https://www.npmjs.com/package/gulp-load-plugins).
@@ -163,10 +165,13 @@ var di = GulpDI({
 ```
 The following options are additionally available:
 
-| Name     |  Type    |  Description                                  |
-|----------|----------|-----------------------------------------------|
-| DEBUG    | Boolean  | Whether to log debugging information or not   |
-| noHelp   | Boolean  | Toggle the "help" task/providing taskInfo     |
+| Name             |  Type    |  Description                                  |
+|------------------|----------|-----------------------------------------------|
+| DEBUG            | Boolean  | Whether to log debugging information or not   |
+| noBuiltin        | Boolean  | Disables helpers: basePath, log, Package      |
+| noHelp           | Boolean  | Toggles the "help" task/providing taskInfo    |
+| noModules        | Boolean  | Do not expose chalk and gutil                 |
+| noRunningTasks   | Boolean  | Do not provide the "runningTasks" function    |
 
 All of the following methods are chainable.
 
@@ -306,6 +311,10 @@ var di = gulpDi()
 })
 .resolve();
 ````
+## runningTasks
+
+This function returns an array of strings, containing all current Gulp tasks,
+including dependencies.
 
 # FAQ
 
@@ -372,9 +381,18 @@ var di = require('gulp-di')(gulp, {
 
 # Changelog
 
+0.0.2 - 02/01/2016
+
+  - Updating dependencies
+  - Adding "runningTasks" helper function
+  - Exposing gulp-util as "gutil" by default
+  - Parsing of multi-line comments rewritten
+  - added new options : noModules, noBuiltin, noRunningTasks
+  - ES2015+ support with [parse-function](https://github.com/tunnckoCore/parse-function)
+
 0.0.1 - 12/20/2015
 
-  Initial release, incorporating Resolver and tests from [dijs](https://www.npmjs.com/package/dijs).
+  - Initial release, incorporating Resolver and tests from [dijs](https://www.npmjs.com/package/dijs).
 
 # Licence
 
