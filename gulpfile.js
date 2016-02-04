@@ -12,7 +12,7 @@
 
 var gulp = require('gulp');
 var di = require('./')(gulp, {
-  DEBUG: true
+  // DEBUG: true
 })
 .modules('./modules')
 .tasks('./tasks')

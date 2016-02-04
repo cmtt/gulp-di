@@ -67,17 +67,15 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
         name : id
       };
       entry.description = util.format('Runs the %s task (no description)', id);
-      if (typeof info === 'object') {
-        var comments = extractComments(info.body, {first : true});
-        if (comments.length) {
-          var comment = comments[0];
-          var lines = comment.raw
-          .split(RGX_LF)
-          .map(function (line) {
-            return line.replace(/(\ )*(\*|\/+)/g, '');
-          });
-          entry.description = lines;
-        }
+      var comments = extractComments(info.body, {first : true});
+      if (comments.length) {
+        var comment = comments[0];
+        var lines = comment.raw
+        .split(RGX_LF)
+        .map(function (line) {
+          return line.replace(/(\ )*(\*|\/+)/g, '');
+        });
+        entry.description = lines;
       }
     } else if (id === 'default') {
       entry = {

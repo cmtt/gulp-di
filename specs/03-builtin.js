@@ -8,7 +8,7 @@ describe('GulpDI', function () {
 
   beforeEach(function () {
     gulp = getGulpInstance();
-    di = new GulpDI(gulp, { DEBUG: true, pattern: [], someTestSetting : '1' });
+    di = new GulpDI(gulp, { DEBUG: false, pattern: [], someTestSetting : '1' });
   });
 
   it('gulp', function (done) {
