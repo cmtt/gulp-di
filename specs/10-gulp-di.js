@@ -1,13 +1,13 @@
-/*global describe:false, beforeEach:false, it:false, assert:false,
-basePath:false, GulpDI:false, getDiInstance:false, getGulpInstance:false */
-describe('GulpDI', function () {
+'use strict';
+const Stream = require('stream');
 
-  var GulpDI = require(basePath('index.js'));
-  var gulp = null;
-  var di = null;
+describe('GulpDI', () => {
 
-  var PI = Math.PI;
-  var RAD_TO_DEG = 180 / PI;
+  let gulp = null;
+  let di = null;
+
+  const PI = Math.PI;
+  const RAD_TO_DEG = 180 / PI;
 
   /**
    * Module declaration which assembles the "toDeg" function using PI and
@@ -20,29 +20,29 @@ describe('GulpDI', function () {
    */
 
   function toDegModule (PI, RAD_TO_DEG) {
-    return function toDeg (radValue) { return radValue * RAD_TO_DEG; };
+    return (radValue) => radValue * RAD_TO_DEG;
   }
 
-  beforeEach(function () {
+  beforeEach(() => {
     di = null;
     gulp = getGulpInstance();
   });
 
-  it('initializes', function () {
+  it('initializes', () => {
     di = getDiInstance(gulp);
   });
 
-  it('byId throws an error when a dependency was not found', function () {
+  it('byId throws an error when a dependency was not found', () => {
     assert.throws(getDiInstance(gulp).byId);
   });
 
-  it('provide', function () {
+  it('provide', () => {
     di = getDiInstance(gulp)
     .provide('test', 'test');
     assert.equal(di.byId('test'), 'test');
   });
 
-  it('task', function (done) {
+  it('task', (done) => {
 
     /**
      * Task function which depends on the "test" string.
@@ -61,23 +61,23 @@ describe('GulpDI', function () {
     .resolve();
   });
 
-  it('throws an error when using invalid notation', function () {
+  it('throws an error when using invalid notation', () => {
     di = getDiInstance(gulp);
-    assert.throws(function () {
+    assert.throws(() => {
       di.task();
     });
-    assert.throws(function () {
+    assert.throws(() => {
       di.module('test',null);
     });
-    assert.throws(function () {
+    assert.throws(() => {
       di.task('null');
     });
-    assert.throws(function () {
+    assert.throws(() => {
       di.module('test',0);
     });
   });
 
-  it('module', function () {
+  it('module', () => {
     di = getDiInstance(gulp)
     .provide('PI', PI)
     .provide('RAD_TO_DEG', RAD_TO_DEG)
@@ -87,20 +87,19 @@ describe('GulpDI', function () {
     assert.equal(typeof di.byId('toDeg'), 'function');
     di.resolve();
 
-    var toDeg = di.byId('toDeg');
-    var pi = di.byId('PI');
+    let toDeg = di.byId('toDeg');
+    let pi = di.byId('PI');
 
     assert.equal(toDeg(pi), 180);
     assert.equal(toDeg(2*pi), 360);
-
   });
 
-  it('task', function (done) {
+  it('task', (done) => {
     di = getDiInstance(gulp)
     .provide('PI', PI)
     .provide('RAD_TO_DEG', RAD_TO_DEG)
     .module('toDeg', toDegModule)
-    .task(function (toDeg, PI) {
+    .task((toDeg, PI) => {
       assert.equal(toDeg(PI), 180);
       assert.equal(toDeg(2*PI), 360);
       done();
@@ -108,32 +107,32 @@ describe('GulpDI', function () {
     .resolve();
   });
 
-  it('inject (chainable)', function (done) {
+  it('inject (chainable)', (done) => {
     di = getDiInstance(gulp)
     .provide('PI', PI)
     .provide('RAD_TO_DEG', RAD_TO_DEG)
     .module('toDeg', toDegModule)
     .resolve();
-    var injectCalled = 0;
-    di.inject(function (toDeg, PI) {
+    let injectCalled = 0;
+    di.inject((toDeg, PI) => {
       ++injectCalled;
       assert.equal(toDeg(PI), 180);
       assert.equal(toDeg(2*PI), 360);
     })
-    .inject(function () {
+    .inject(() => {
       assert.equal(injectCalled, 1);
       done();
     });
   });
 
-  it('inject (w/ return value)', function () {
+  it('inject (w/ return value)', () => {
     di = getDiInstance(gulp)
     .provide('PI', PI)
     .provide('RAD_TO_DEG', RAD_TO_DEG)
     .module('toDeg', toDegModule)
     .resolve();
-    var injectCalled = 0;
-    var returnValue = di.inject(function (toDeg, PI) {
+    let injectCalled = 0;
+    let returnValue = di.inject((toDeg, PI) => {
       ++injectCalled;
       return toDeg(2*PI);
     }, true);
@@ -141,14 +140,16 @@ describe('GulpDI', function () {
     assert.equal(returnValue, 360);
   });
 
-  it('includes gulp and can run a task', function (done) {
+  it('includes gulp and can run a task', (done) => {
+    gulp.on('stop', () => {
+      done();
+    });
 
     di = getDiInstance(gulp)
-    .task(function (gulp, PI, toDeg) {
+    .task((gulp, PI, toDeg) => {
       assert.ok(gulp);
-      gulp.task('default', function () {
+      gulp.task('default', () => {
         assert.equal(toDeg(2*PI), 360);
-        done();
       });
     })
     .module('toDeg', toDegModule)
@@ -157,28 +158,42 @@ describe('GulpDI', function () {
     .resolve();
 
     gulp.start('default');
-
   });
 
-  it('help task', function (done) {
-    di = getDiInstance(gulp);
-    di.task(function () {
-      gulp.task('test', ['help'], function () {
+  it('can concatenate all spec files', (done) => {
+    let gulp = getGulpInstance();
+    let di = getDiInstance(gulp);
+    let s = new Stream.Transform();
+    let l = 0;
+    let count = 0;
+    let ended = false;
+    s.write = function (file) {
+      ++count;
+      l += file._contents.length;
+    };
+    s.on('end', () => {
+      ended = true;
+    });
+
+    di.task((gulp, concat) => {
+      gulp.task('concat', () => {
         /**
          * This task comment should appear in this test
          * and it might have multiple lines
          */
-      });
-      gulp.task('oneline-comment', function () {
-        // This comment line should appear
-        // and this shouldn't
+        return gulp.src('specs/**/*.js')
+        .pipe(concat('all_specs.js'))
+        .pipe(s);
+        // console.log('The concat command', concat);
       });
     });
-    gulp.on('stop', function () {
+    gulp.on('stop', () => {
+      assert.ok(ended, 'Stream was closed');
+      assert.ok(l > 0, 'Read more than zero bytes');
+      assert.equal(count, 1, 'Solely one file written');
       done();
     });
     di.resolve();
-    gulp.start('help');
+    gulp.start('concat');
   });
-
 });

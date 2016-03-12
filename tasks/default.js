@@ -1,3 +1,5 @@
-module.exports = function (gulp, Package, basePath) {
-  gulp.task('default', ['jshint','mocha', 'help']);
+'use strict';
+
+module.exports = (gulp, Package, basePath) => {
+  gulp.task('default', ['mocha', 'jshint']);
 };

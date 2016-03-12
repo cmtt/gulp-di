@@ -1,11 +1,11 @@
-module.exports = function (gulp, paths, mocha) {
+module.exports = (gulp, paths, mocha) => {
 
-  gulp.task('mocha', function () {
+  gulp.task('mocha', () => {
 
     // Runs the unit tests using Mocha
 
-    return gulp.src(paths.specs)
-    .pipe(mocha());
+    return gulp.src(paths.specs, { read : false })
+    .pipe(mocha({}));
   });
 
 };

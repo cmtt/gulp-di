@@ -1,8 +1,8 @@
-/*jshint -W089 */
+'use strict';
 
 module.exports = function RunningTasks (gulp, gutil, log) {
 
-  var DEBUG = this.options.DEBUG;
+  const DEBUG = this.options.DEBUG;
 
   /**
    * Adds a function returning an array of strings, containing all current
@@ -26,21 +26,21 @@ module.exports = function RunningTasks (gulp, gutil, log) {
   }
 
   this.provide('runningTasks', function () {
-    var tasks = [];
-    var args = gutil.env._;
-    var taskNames = Object.keys(gulp.tasks);
+    let tasks = [];
+    let args = gutil.env._;
+    let taskNames = Object.keys(gulp.tasks);
 
     // Filter all available task names using gutil.env._
 
-    var cliTasks = taskNames.filter(function (name) {
+    let cliTasks = taskNames.filter(function (name) {
       return !!~args.indexOf(name);
     });
 
     // Include the names of depending tasks
 
-    for (var i = 0, l = cliTasks.length; i < l; i++) {
-      var name = cliTasks[i];
-      var task = gulp.tasks[name];
+    for (let i = 0, l = cliTasks.length; i < l; i++) {
+      let name = cliTasks[i];
+      let task = gulp.tasks[name];
       tasks = tasks.concat(task.dep);
       tasks.push(task.name);
     }

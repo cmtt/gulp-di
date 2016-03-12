@@ -1,3 +1,4 @@
+'use strict';
 /*jshint -W089 */
 
 module.exports = function HelpTask (gulp, Package, log, chalk) {
@@ -26,13 +27,13 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
    * experimental.
    */
 
-  var parseFn = require('parse-function');
-  var util = require('util');
-  var extractComments = require('extract-comments');
-  var _task = gulp.task;
-  var taskInfo = {};
-  var RGX_LF = /\r\n|\r|\n/g;
-  var DEBUG = this.options.DEBUG;
+  const parseFn = require('parse-function');
+  const util = require('util');
+  const extractComments = require('extract-comments');
+  const _task = gulp.task;
+  const taskInfo = {};
+  const RGX_LF = /\r\n|\r|\n/g;
+  const DEBUG = this.options.DEBUG;
 
   if (DEBUG) {
     log('Wrapping gulp.task() "gulp help" task...');
@@ -43,7 +44,7 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
   this.provide('taskInfo', taskInfo);
 
   /**
-   * Wraps the gulp.task() method, registeres information about the provided
+   * Wraps the gulp.task() method, registers information about the provided
    * tasks.
    * @method task
    * @param {string} id
@@ -52,25 +53,25 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
    */
 
   gulp.task = function (id, deps, fn) {
-    var args = [].slice.apply(arguments);
+    let args = [].slice.apply(arguments);
 
     if (typeof deps === 'function') {
       fn = arguments[1];
       deps = [];
     }
 
-    var entry = null;
+    let entry = null;
 
     if (typeof fn === 'function') {
-      var info = parseFn(fn);
+      let info = parseFn(fn);
       entry = {
         name : id
       };
       entry.description = util.format('Runs the %s task (no description)', id);
-      var comments = extractComments(info.body, {first : true});
+      let comments = extractComments(info.body, {first : true});
       if (comments.length) {
-        var comment = comments[0];
-        var lines = comment.raw
+        let comment = comments[0];
+        let lines = comment.raw
         .split(RGX_LF)
         .map(function (line) {
           return line.replace(/(\ )*(\*|\/+)/g, '');
@@ -88,7 +89,7 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
     if (entry) {
       entry.deps = deps;
       if (DEBUG) {
-        var line = ['Adding', chalk.cyan(entry.name), 'task'];
+        let line = ['Adding', chalk.cyan(entry.name), 'task'];
         if (deps.length) {
           line.push(' - depending on ',chalk.magenta(deps.join(' ')));
         }
@@ -105,11 +106,11 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
   gulp.task('help', function () {
     /* Prints an overview over all available Gulp tasks. */
 
-    var util = require('util');
-    var pad = require('pad');
-    var lines = [''];
-    var padding = 5;
-    var paddingStr = new Array(padding).join(' ');
+    let util = require('util');
+    let pad = require('pad');
+    let lines = [''];
+    let padding = 5;
+    let paddingStr = new Array(padding).join(' ');
 
     lines.push(' ' + Package.name + ' ' + Package.version, '');
 
@@ -117,34 +118,33 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
       lines.push(' ' + Package.description, '');
     }
 
-    var taskIds = Object.keys(taskInfo);
-    var taskLengths = taskIds.map(function (id) { return id.length; });
-    var maxLength = Math.max.apply(Math, taskLengths);
+    let taskIds = Object.keys(taskInfo);
+    let taskLengths = taskIds.map(function (id) { return id.length; });
+    let maxLength = Math.max.apply(Math, taskLengths);
 
-    for (var key in taskInfo) {
-      var entry = taskInfo[key];
-      var paddingLength = maxLength;
-      var str = new Array(paddingLength+2).join(' ');
-      var descriptionLine = util.format('Runs the %s task.', key);
-      if (entry.description) descriptionLine = mapDescription(entry.description);
+    for (let key in taskInfo) {
+      let entry = taskInfo[key];
+      let paddingLength = maxLength;
+      let str = new Array(paddingLength+2).join(' ');
+      let descriptionLine = util.format('Runs the %s task.', key);
+      if (entry.description) descriptionLine = mapDescription(str, entry.description);
       lines.push(' ' + pad(entry.name, maxLength) + paddingStr + descriptionLine.join('\n').trim());
       lines.push('');
     }
 
-    lines.forEach(function (line) {
-      console.log(line);
-    });
+    lines.forEach((line) => console.log(line));
 
     /**
      * Maps the given array of comment lines by prepending whitespace if
      * necessary.
      * @method mapDescription
+     * @param {string} str
      * @param {string[]} lines
      * @return {string[]}
      * @private
      */
 
-    function mapDescription(lines) {
+    function mapDescription(str, lines) {
       if (typeof lines === 'string') lines = [lines];
       return lines.map(function (line, index) {
         line = line.trim();
