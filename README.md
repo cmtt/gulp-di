@@ -1,13 +1,26 @@
-<a href="http://gulpjs.com">
-  <img align="right" src="http://cmtt.github.io/gulp-di/src/gulp.png">
-</a>
-<p align="left">
-  <a href="https://travis-ci.org/cmtt/gulp-di">
-    <img src="https://travis-ci.org/cmtt/gulp-di.svg?branch=master" alt="Build Status">
-  </a>
-</p>
-
 # [gulp](http://gulpjs.com)-di
+
+<a href="http://gulpjs.com">
+  <img align="right" height="192" src="http://cmtt.github.io/gulp-di/src/gulp.png">
+</a>
+
+<div>
+  <a href="https://travis-ci.org/cmtt/gulp-di">
+    <img src="https://img.shields.io/travis/cmtt/gulp-di/master.svg?style=flat-square" alt="Build Status">
+  </a>
+  <a href="https://www.npmjs.org/package/gulp-di">
+    <img src="https://img.shields.io/npm/v/gulp-di.svg?style=flat-square" alt="npm version">
+  </a>
+  <a href="http://spdx.org/licenses/MIT">
+    <img src="https://img.shields.io/npm/l/gulp-di.svg?style=flat-square" alt="npm licence">
+  </a>
+  <a href="https://coveralls.io/github/cmtt/gulp-di">
+    <img src="https://img.shields.io/coveralls/cmtt/gulp-di/master.svg?style=flat-square" alt="Code coverage">
+  </a>
+  <a href="http://www.ecma-international.org/ecma-262/6.0/">
+    <img src="https://img.shields.io/badge/ES-2015-F0DB4F.svg?style=flat-square" alt="ECMAScript 2015">
+  </a>
+</div>
 
 gulp-di is a dependency injection framework for the [Gulp](http://gulpjs.com)
 streaming build system.
@@ -63,6 +76,95 @@ module.exports = (gulp, concat) => {
 ````
 Please read the API notes below for configuring a pattern for packages which
 do not start with "gulp-" or "gulp.*".
+
+## Example: Basic refactoring
+
+Instead of declaring all gulp tasks in a single file, gulp-di allows you to
+take a more modular approach. You can separate your stream definitions from
+configurations while gulp-di handles the majority of your existing calls to
+require() for you.
+
+In this example, we will see how we can move a call to gulp.task() to a
+separate file.
+
+Additionally, we will see how we can detach a constant (in this case: a glob
+matching all files with the "jpg" extension) from the actual task.
+
+The following task
+
+````js
+/* gulpfile.js (previous version) */
+
+const gulp = require('gulp');
+gulp.task('images', () => {
+  return gulp.src('./**/*.jpg')
+  .pipe(gulp.dest('output/'));
+});
+````
+
+would be re-factored to the file at tasks/images.js as following.
+
+````js
+/* tasks/images.js */
+
+module.exports = (gulp, imagesPath) => {
+  gulp.task('images', () => {
+    return gulp.src(imagesPath)
+    .pipe(gulp.dest('output/'));
+  });
+};
+````
+
+Notice that the function uses the "imagePath" constant. Such constants can
+be defined in your Gulpfile files in order to separate them from the tasks.
+
+Thus, you can now use all of your Functional programming skills with Gulp and
+**assemble** your tasks from other declarations and build much more
+flexible and re-usable tasks.
+
+gulp-di should help you to reduce your Gulpfile's complexity.
+In this example, we will declare additionally the "imagePath" constant which is
+being used in our "images" task.
+
+````js
+/* gulpfile.js (refactored version) */
+
+const gulp = require('gulp');
+let di = require('gulp-di')(gulp);
+.tasks('./tasks')
+.provide('imagesPath', 'src/**/*.jpg')
+.resolve();
+````
+
+Additionally, you can now "inject" arbitrary values into your functions, e. g.
+run-time configurations, asynchronous methods for usage with Gulp's asynchronous
+API, constants etc.
+
+The following example uses constants and modules in order to compose a helper
+function.
+
+````js
+/* gulpfile.js (refactored version) */
+
+const gulp = require('gulp');
+let di = require('gulp-di')(gulp);
+.tasks('./tasks')
+.provide('sourcePath', 'src')                    // Provide a string constant.
+.module('extensionPath', (sourcePath) => {       // Add a module providing a
+                                                 // helper function to get a
+                                                 // extension name.
+
+  return (extname) => `${sourcePath}/**/*.${extname}`;
+
+})
+.task(function (gulp, extensionPath) {
+  gulp.task('copy-images', function () {
+    // Copies all *.jpg images from src/ to public/
+    return gulp.src(extensionPath('jpg')).pipe(gulp.dest('public/'));
+  });
+})
+.resolve();
+````
 
 ## API
 
@@ -312,94 +414,6 @@ function jadeTask(gulp, jade) {
   });
 }
 ````
-## Example: Basic refactoring
-
-Instead of declaring all gulp tasks in a single file, gulp-di allows you to
-take a more modular approach. You can separate your stream definitions from
-configurations while gulp-di handles the majority of your existing calls to
-require() for you.
-
-In this example, we will see how we can move a call to gulp.task() to a
-separate file.
-
-Additionally, we will see how we can detach a constant (in this case: a glob
-matching all files with the "jpg" extension) from the actual task.
-
-The following task
-
-````js
-/* gulpfile.js (previous version) */
-
-const gulp = require('gulp');
-gulp.task('images', () => {
-  return gulp.src('./**/*.jpg')
-  .pipe(gulp.dest('output/'));
-});
-````
-
-would be re-factored to the file at tasks/images.js as following.
-
-````js
-/* tasks/images.js */
-
-module.exports = (gulp, imagesPath) => {
-  gulp.task('images', () => {
-    return gulp.src(imagesPath)
-    .pipe(gulp.dest('output/'));
-  });
-};
-````
-
-Notice that the function uses the "imagePath" constant. Such constants can
-be defined in your Gulpfile files in order to separate them from the tasks.
-
-Thus, you can now use all of your Functional programming skills with Gulp and
-**assemble** your tasks from other declarations and build much more
-flexible and re-usable tasks.
-
-gulp-di should help you to reduce your Gulpfile's complexity.
-In this example, we will declare additionally the "imagePath" constant which is
-being used in our "images" task.
-
-````js
-/* gulpfile.js (refactored version) */
-
-const gulp = require('gulp');
-let di = require('gulp-di')(gulp);
-.tasks('./tasks')
-.provide('imagesPath', 'src/**/*.jpg')
-.resolve();
-````
-
-Additionally, you can now "inject" arbitrary values into your functions, e. g.
-run-time configurations, asynchronous methods for usage with Gulp's asynchronous
-API, constants etc.
-
-The following example uses constants and modules in order to compose a helper
-function.
-
-````js
-/* gulpfile.js (refactored version) */
-
-const gulp = require('gulp');
-let di = require('gulp-di')(gulp);
-.tasks('./tasks')
-.provide('sourcePath', 'src')                    // Provide a string constant.
-.module('extensionPath', (sourcePath) => {       // Add a module providing a
-                                                 // helper function to get a
-                                                 // extension name.
-
-  return (extname) => `${sourcePath}/**/*.${extname}`;
-
-})
-.task(function (gulp, extensionPath) {
-  gulp.task('copy-images', function () {
-    // Copies all *.jpg images from src/ to public/
-    return gulp.src(extensionPath('jpg')).pipe(gulp.dest('public/'));
-  });
-})
-.resolve();
-````
 
 ## FAQ
 
@@ -465,6 +479,13 @@ let di = require('gulp-di')(gulp, {
 ````
 
 ## Changelog
+
+0.0.31 - 03/13/2016
+
+  - options.argv for "runningTasks" test
+  - options.parentDir
+  - updating documentation
+  - extending test suite, adding code coverage report
 
 0.0.3 - 03/12/2016
 

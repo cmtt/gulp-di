@@ -87,7 +87,6 @@ describe('parseArgument', function () {
     check(abc, 'abc');
     check(cab0, 'cab');
     check(cab1, 'cab');
-
   });
 
 });

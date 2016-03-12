@@ -7,7 +7,7 @@ describe('GulpDI', () => {
 
   beforeEach(() => {
     gulp = getGulpInstance();
-    di = new GulpDI(gulp, { DEBUG: false, pattern: [], someTestSetting : '1' });
+    di = getDiInstance(gulp, { DEBUG: false, pattern: [], someTestSetting : '1' });
   });
 
   it('gulp', (done) => {

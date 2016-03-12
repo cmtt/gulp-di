@@ -3,9 +3,6 @@ const Stream = require('stream');
 
 describe('GulpDI', () => {
 
-  let gulp = null;
-  let di = null;
-
   const PI = Math.PI;
   const RAD_TO_DEG = 180 / PI;
 
@@ -23,177 +20,241 @@ describe('GulpDI', () => {
     return (radValue) => radValue * RAD_TO_DEG;
   }
 
-  beforeEach(() => {
-    di = null;
-    gulp = getGulpInstance();
-  });
+  let gulp = null;
+  let di = null;
 
-  it('initializes', () => {
-    di = getDiInstance(gulp);
-  });
+  describe('Initialization', () => {
 
-  it('byId throws an error when a dependency was not found', () => {
-    assert.throws(getDiInstance(gulp).byId);
-  });
-
-  it('provide', () => {
-    di = getDiInstance(gulp)
-    .provide('test', 'test');
-    assert.equal(di.byId('test'), 'test');
-  });
-
-  it('task', (done) => {
-
-    /**
-     * Task function which depends on the "test" string.
-     * @method taskFunction
-     * @param {string} test
-     */
-
-    function taskFunction (test) {
-      assert.equal(test, 'test');
-      done();
-    }
-
-    di = getDiInstance(gulp)
-    .provide('test', 'test')
-    .task(taskFunction)
-    .resolve();
-  });
-
-  it('throws an error when using invalid notation', () => {
-    di = getDiInstance(gulp);
-    assert.throws(() => {
-      di.task();
+    beforeEach(() => {
+      di = null;
+      gulp = getGulpInstance();
     });
-    assert.throws(() => {
-      di.module('test',null);
+
+    it('initializes', () => {
+      di = getDiInstance(gulp).resolve();
     });
-    assert.throws(() => {
-      di.task('null');
+
+    it('byId throws an error when a dependency was not found', () => {
+      assert.throws(getDiInstance(gulp).byId);
     });
-    assert.throws(() => {
-      di.module('test',0);
+
+    it('byId with noError does not throw an error when a dependency was not found', () => {
+      di = getDiInstance(gulp).resolve();
+      let info = di.byId('UnknownDependency_', true);
+      assert.equal(info, null);
     });
-  });
 
-  it('module', () => {
-    di = getDiInstance(gulp)
-    .provide('PI', PI)
-    .provide('RAD_TO_DEG', RAD_TO_DEG)
-    .module('toDeg', toDegModule);
-
-    assert.ok(di.byId('toDeg'));
-    assert.equal(typeof di.byId('toDeg'), 'function');
-    di.resolve();
-
-    let toDeg = di.byId('toDeg');
-    let pi = di.byId('PI');
-
-    assert.equal(toDeg(pi), 180);
-    assert.equal(toDeg(2*pi), 360);
-  });
-
-  it('task', (done) => {
-    di = getDiInstance(gulp)
-    .provide('PI', PI)
-    .provide('RAD_TO_DEG', RAD_TO_DEG)
-    .module('toDeg', toDegModule)
-    .task((toDeg, PI) => {
-      assert.equal(toDeg(PI), 180);
-      assert.equal(toDeg(2*PI), 360);
-      done();
-    })
-    .resolve();
-  });
-
-  it('inject (chainable)', (done) => {
-    di = getDiInstance(gulp)
-    .provide('PI', PI)
-    .provide('RAD_TO_DEG', RAD_TO_DEG)
-    .module('toDeg', toDegModule)
-    .resolve();
-    let injectCalled = 0;
-    di.inject((toDeg, PI) => {
-      ++injectCalled;
-      assert.equal(toDeg(PI), 180);
-      assert.equal(toDeg(2*PI), 360);
-    })
-    .inject(() => {
-      assert.equal(injectCalled, 1);
-      done();
+    it('provide', () => {
+      di = getDiInstance(gulp)
+      .provide('test', 'test');
+      assert.equal(di.byId('test'), 'test');
     });
+
+    it('options.noModules', () => {
+      di = getDiInstance(gulp, { noModules : true }).resolve();
+      assert.throws(() => di.byId('_'));
+      assert.throws(() => di.byId('chalk'));
+      assert.throws(() => di.byId('gutil'));
+    });
+
+    it('options.noBuiltin', () => {
+      di = getDiInstance(gulp, { noBuiltin : true }).resolve();
+      assert.throws(() => di.byId('basePath'));
+      assert.throws(() => di.byId('log'));
+      assert.throws(() => di.byId('Package'));
+    });
+
+    it('options.noHelp', () => {
+      di = getDiInstance(gulp, { noHelp : true }).resolve();
+      assert.ok(!gulp.tasks.help);
+    });
+
   });
 
-  it('inject (w/ return value)', () => {
-    di = getDiInstance(gulp)
-    .provide('PI', PI)
-    .provide('RAD_TO_DEG', RAD_TO_DEG)
-    .module('toDeg', toDegModule)
-    .resolve();
-    let injectCalled = 0;
-    let returnValue = di.inject((toDeg, PI) => {
-      ++injectCalled;
-      return toDeg(2*PI);
-    }, true);
-    assert.equal(injectCalled, 1);
-    assert.equal(returnValue, 360);
-  });
+  describe('Dependency injection', () => {
 
-  it('includes gulp and can run a task', (done) => {
-    gulp.on('stop', () => {
+    it('throws an error when using invalid notation', () => {
+      di = getDiInstance(gulp);
+      assert.throws(() => {
+        di.task();
+      });
+      assert.throws(() => {
+        di.module('test',null);
+      });
+      assert.throws(() => {
+        di.task('null');
+      });
+      assert.throws(() => {
+        di.module('test',0);
+      });
+    });
+
+    it('module', () => {
+      di = getDiInstance(gulp)
+      .provide('PI', PI)
+      .provide('RAD_TO_DEG', RAD_TO_DEG)
+      .module('toDeg', toDegModule);
+
+      assert.ok(di.byId('toDeg'));
+      assert.equal(typeof di.byId('toDeg'), 'function');
+      di.resolve();
+
+      let toDeg = di.byId('toDeg');
+      let pi = di.byId('PI');
+
+      assert.equal(toDeg(pi), 180);
+      assert.equal(toDeg(2*pi), 360);
+    });
+
+    it('modules', (done) => {
+      let called = [];
+      di = getDiInstance(gulp)
+      .modules('./modules')
+      .resolve();
+      let paths = di.byId('paths');
+      assert.equal(typeof paths, 'object');
       done();
     });
 
-    di = getDiInstance(gulp)
-    .task((gulp, PI, toDeg) => {
-      assert.ok(gulp);
-      gulp.task('default', () => {
+    it('inject (chainable)', (done) => {
+      di = getDiInstance(gulp)
+      .provide('PI', PI)
+      .provide('RAD_TO_DEG', RAD_TO_DEG)
+      .module('toDeg', toDegModule)
+      .resolve();
+      let injectCalled = 0;
+      di.inject((toDeg, PI) => {
+        ++injectCalled;
+        assert.equal(toDeg(PI), 180);
         assert.equal(toDeg(2*PI), 360);
-      });
-    })
-    .module('toDeg', toDegModule)
-    .provide('PI', PI)
-    .provide('RAD_TO_DEG', RAD_TO_DEG)
-    .resolve();
-
-    gulp.start('default');
-  });
-
-  it('can concatenate all spec files', (done) => {
-    let gulp = getGulpInstance();
-    let di = getDiInstance(gulp);
-    let s = new Stream.Transform();
-    let l = 0;
-    let count = 0;
-    let ended = false;
-    s.write = function (file) {
-      ++count;
-      l += file._contents.length;
-    };
-    s.on('end', () => {
-      ended = true;
-    });
-
-    di.task((gulp, concat) => {
-      gulp.task('concat', () => {
-        /**
-         * This task comment should appear in this test
-         * and it might have multiple lines
-         */
-        return gulp.src('specs/**/*.js')
-        .pipe(concat('all_specs.js'))
-        .pipe(s);
-        // console.log('The concat command', concat);
+      })
+      .inject(() => {
+        assert.equal(injectCalled, 1);
+        done();
       });
     });
-    gulp.on('stop', () => {
-      assert.ok(ended, 'Stream was closed');
-      assert.ok(l > 0, 'Read more than zero bytes');
-      assert.equal(count, 1, 'Solely one file written');
-      done();
+
+    it('inject (w/ return value)', () => {
+      di = getDiInstance(gulp)
+      .provide('PI', PI)
+      .provide('RAD_TO_DEG', RAD_TO_DEG)
+      .module('toDeg', toDegModule)
+      .resolve();
+      let injectCalled = 0;
+      let returnValue = di.inject((toDeg, PI) => {
+        ++injectCalled;
+        return toDeg(2*PI);
+      }, true);
+      assert.equal(injectCalled, 1);
+      assert.equal(returnValue, 360);
     });
-    di.resolve();
-    gulp.start('concat');
+
+    it('throws an error when a missing dependency is declared', () => {
+      di = getDiInstance(gulp)
+      .task(function (test) {});
+      assert.throws(() => di.resolve());
+    });
+
   });
+
+  describe('Tasks', () => {
+
+    it('task', (done) => {
+      di = getDiInstance(gulp)
+      .provide('PI', PI)
+      .provide('RAD_TO_DEG', RAD_TO_DEG)
+      .module('toDeg', toDegModule)
+      .provide('test', 'test')
+      .task((test, toDeg, PI) => {
+        assert.equal(test, 'test');
+        assert.equal(toDeg(PI), 180);
+        assert.equal(toDeg(2*PI), 360);
+        done();
+      })
+      .resolve();
+    });
+
+    it('task with an object', (done) => {
+      let called = [];
+      di = getDiInstance(gulp)
+      .task({
+        'first' : () => {
+          done();
+        }
+      })
+      .resolve();
+    });
+
+    it('tasks', (done) => {
+      di = getDiInstance(gulp)
+      .modules('./modules')
+      .tasks('./tasks')
+      .resolve();
+      di.inject((gulp) => {
+        assert.ok(gulp.tasks.jshint);
+        done();
+      });
+    });
+
+    it('includes gulp and can run a task', (done) => {
+      let taskCalled = false;
+      gulp.on('stop', () => {
+        assert.equal(taskCalled, true);
+        done();
+      });
+
+      di = getDiInstance(gulp)
+      .task((gulp, PI, toDeg) => {
+        assert.ok(gulp);
+        gulp.task('default', () => {
+          taskCalled = true;
+          assert.equal(toDeg(2*PI), 360);
+        });
+      })
+      .module('toDeg', toDegModule)
+      .provide('PI', PI)
+      .provide('RAD_TO_DEG', RAD_TO_DEG)
+      .resolve();
+
+      gulp.start('default');
+    });
+
+    it('can concatenate all spec files', (done) => {
+      let gulp = getGulpInstance();
+      let di = getDiInstance(gulp, { lazy : false });
+      let s = new Stream.Transform();
+      let l = 0;
+      let count = 0;
+      let ended = false;
+      s.write = function (file) {
+        ++count;
+        l += file._contents.length;
+      };
+      s.on('end', () => {
+        ended = true;
+      });
+
+      di.task((gulp, concat) => {
+        gulp.task('concat', () => {
+          /**
+           * This task comment should appear in this test
+           * and it might have multiple lines
+           */
+          return gulp.src('specs/**/*.js')
+          .pipe(concat('all_specs.js'))
+          .pipe(s);
+          // console.log('The concat command', concat);
+        });
+      });
+      gulp.on('stop', () => {
+        assert.ok(ended, 'Stream was closed');
+        assert.ok(l > 0, 'Read more than zero bytes');
+        assert.equal(count, 1, 'Solely one file written');
+        done();
+      });
+      di.resolve();
+      gulp.start('concat');
+    });
+  });
+
 });

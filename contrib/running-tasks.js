@@ -1,8 +1,10 @@
 'use strict';
 
-module.exports = function RunningTasks (gulp, gutil, log) {
+module.exports = function RunningTasks (gulp) {
 
   const DEBUG = this.options.DEBUG;
+  let log = this.byId('log', true) || console.log.bind(console);
+  let gutil = this.byId('gutil', true) || { env : { _ : process.argv }};
 
   /**
    * Adds a function returning an array of strings, containing all current
@@ -25,11 +27,10 @@ module.exports = function RunningTasks (gulp, gutil, log) {
     log('Adding runningTasks helper...');
   }
 
-  this.provide('runningTasks', function () {
+  this.provide('runningTasks', () => {
     let tasks = [];
-    let args = gutil.env._;
+    let args = this.options.argv || gutil.env._;
     let taskNames = Object.keys(gulp.tasks);
-
     // Filter all available task names using gutil.env._
 
     let cliTasks = taskNames.filter(function (name) {

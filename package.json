@@ -1,10 +1,11 @@
 {
   "name": "gulp-di",
-  "version": "0.0.3",
+  "version": "0.0.31",
   "description": "Dependency injection framework for the Gulp streaming build system",
   "main": "index.js",
   "scripts": {
-    "test": "gulp mocha"
+    "test": "gulp mocha",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "author": {
     "name": "Matthias Thoemmes",
@@ -37,6 +38,7 @@
     "findup-sync": "^0.3.0",
     "gulp": "*",
     "gulp-concat": "^2.6.0",
+    "gulp-istanbul": "^0.10.3",
     "gulp-jshint": "^2.0.0",
     "gulp-load-plugins": "^1.2.0",
     "gulp-mocha": "^2.2.0",
@@ -50,6 +52,6 @@
     "require-dir": "^0.3.0"
   },
   "devDependencies": {
-    "gulp-markdown-docs": "^0.1.5"
+    "coveralls": "^2.11.8"
   }
 }

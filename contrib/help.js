@@ -1,7 +1,7 @@
 'use strict';
 /*jshint -W089 */
 
-module.exports = function HelpTask (gulp, Package, log, chalk) {
+module.exports = function HelpTask (gulp) {
 
   /**
    * Modifies the gulp.task() function and builds a list of all tasks.
@@ -26,6 +26,10 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
    * As such modifications might lead to unexpected behavior, this module is
    * experimental.
    */
+
+  let Package = this.byId('Package', true) || {};
+  let chalk = this.byId('chalk', true);
+  let log = this.byId('log', true) || console.log.bind(console);
 
   const parseFn = require('parse-function');
   const util = require('util');
@@ -84,7 +88,6 @@ module.exports = function HelpTask (gulp, Package, log, chalk) {
         description : 'Runs the default tasks: ' + deps.join(' ')
       };
     }
-
 
     if (entry) {
       entry.deps = deps;

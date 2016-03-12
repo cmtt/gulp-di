@@ -74,7 +74,6 @@ function standardTask (name, src, dest) {
   });
 `;
   let taskFn = eval(`function ${fnName}Task (gulp) { ${body} }; ${fnName}Task;`);
-
   return taskFn;
 }
 
