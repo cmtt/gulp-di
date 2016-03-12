@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This is currently solely an example on how you could use
  * gulp-di in many ways.
@@ -10,9 +12,10 @@
  * $ gulp b info wait
  */
 
-var gulp = require('gulp');
-var di = require('./')(gulp, {
+const gulp = require('gulp');
+let di = require('./')(gulp, {
   // DEBUG: true
+  // lazy : false
 })
 .modules('./modules')
 .tasks('./tasks')
@@ -26,12 +29,10 @@ var di = require('./')(gulp, {
 // In order to use this feature, you'll need to call gulp.task() AFTER
 // gulp-di though.
 
-gulp.task('wait', function (done) {
+gulp.task('wait', (done) => {
   /**
    * Waits for one second, features a
    * multi-line comment (see gulpfile.js).
    */
-  di.inject(function () {
-    setTimeout(done, 1e3);
-  });
+  di.inject(() => setTimeout(done, 1e3));
 });

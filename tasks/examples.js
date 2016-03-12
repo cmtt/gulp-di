@@ -1,9 +1,11 @@
-module.exports = function (Package, basePath,chalk, log, gulp, taskInfo, gutil, runningTasks) {
+'use strict';
+
+module.exports = (Package, basePath,chalk, log, gulp, taskInfo, gutil, runningTasks) => {
   // The order of dependencies does not matter ^^^^
 
-  var path = require('path');
+  const path = require('path');
 
-  gulp.task('log-path', function () {
+  gulp.task('log-path', () => {
 
     /**
      * Example using the build-in constant Package from your the current
@@ -17,7 +19,7 @@ module.exports = function (Package, basePath,chalk, log, gulp, taskInfo, gutil, 
 
   // You can declare multiple gulp tasks in each file.
 
-  gulp.task('task-info', function () {
+  gulp.task('task-info', () => {
 
     /**
      * Example logging task information from contrib/help.js
@@ -27,11 +29,11 @@ module.exports = function (Package, basePath,chalk, log, gulp, taskInfo, gutil, 
     console.log(taskInfo);
   });
 
-  gulp.task('a', function () {});
-  gulp.task('b',['c', 'a'], function () {});
-  gulp.task('c', function () {});
+  gulp.task('a', () => {});
+  gulp.task('b',['c', 'a'], () => {});
+  gulp.task('c', () => {});
 
-  gulp.task('info', function () {
+  gulp.task('info', () => {
 
     /**
      * Demonstrates logging currently running tasks.
@@ -46,7 +48,7 @@ module.exports = function (Package, basePath,chalk, log, gulp, taskInfo, gutil, 
      * // ['c']
      */
 
-    var line = [
+    let line = [
       'Building' ,
       chalk.magenta(Package.name),
       Package.version ,

@@ -28,7 +28,7 @@
     "boss": false,
     "debug": false,
     "eqnull": true,
-    "esnext": false,
+    "esnext": true,
     "evil": false,
     "expr": false,
     "funcscope": false,
@@ -50,6 +50,9 @@
     "validthis": false,
     "noyield": false,
     "browser": true,
+    "mocha" : true,
     "node": true,
-    "globals": {}
+    "globals": {
+        "assert" : true
+    }
 }
