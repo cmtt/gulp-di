@@ -1,6 +1,6 @@
 {
   "name": "gulp-di",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "description": "Dependency injection framework for the Gulp streaming build system",
   "main": "index.js",
   "scripts": {

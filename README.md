@@ -176,7 +176,8 @@ instance from your Gulpfile.
 If you specify options, these will be passed to [gulp-load-plugins](https://www.npmjs.com/package/gulp-load-plugins) under the hood ("camelize" cannot be configured at the moment).
 
 ```js
-let di = GulpDI({
+const gulp = require('gulp');
+let di = GulpDI(gulp, {
   DEBUG: false, // when set to true, the plugin will log info to console. Useful for bug reporting and issue debugging
   pattern: ['gulp-*', 'gulp.*'], // the glob(s) to search for
   config: 'package.json', // where to find the plugins, by default searched up from process.cwd()
@@ -184,7 +185,7 @@ let di = GulpDI({
   replaceString: /^gulp(-|\.)/, // what to remove from the name of the module when adding it to the context
   rename: {}, // a mapping of plugins to rename
   renameFn: function (name) { ... } // a function to handle the renaming of plugins (the default works)
-}, require('gulp'));
+});
 ```
 The following options are additionally available:
 
@@ -479,6 +480,10 @@ let di = require('gulp-di')(gulp, {
 ````
 
 ## Changelog
+
+0.0.32 - 04/02/2016
+
+  - Correcting an example in this file
 
 0.0.31 - 03/13/2016
 
