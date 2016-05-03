@@ -481,6 +481,10 @@ let di = require('gulp-di')(gulp, {
 
 ## Changelog
 
+0.0.33 - 05/03/2016
+
+  - Updating depencendies and adapting to changes
+
 0.0.32 - 04/02/2016
 
   - Correcting an example in this file

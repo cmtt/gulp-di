@@ -67,7 +67,7 @@ module.exports = function HelpTask (gulp) {
     let entry = null;
 
     if (typeof fn === 'function') {
-      let info = parseFn(fn);
+      let info = parseFn(fn.toString());
       entry = {
         name : id
       };
