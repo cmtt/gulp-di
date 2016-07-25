@@ -17,7 +17,6 @@ const path = require('path');
  */
 
 function standardTask (name, src, dest) {
-
   let args = _.toArray(arguments).slice(3); // dependencies
   let stack = null;
   let filename = '<unknown>';
@@ -69,7 +68,7 @@ function standardTask (name, src, dest) {
     }
 
     return gulp.src("${src}")
-    .pipe(plugin(${ args || 'void 0' }))
+    .pipe(plugin(${args || 'void 0'}))
     .pipe(gulp.dest("${dest}"));
   });
 `;

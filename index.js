@@ -1,1 +1,1 @@
-module.exports = require('./lib/di');
+module.exports = require('./lib/gulp-di');

@@ -1,13 +1,12 @@
 'use strict';
 
-describe('GulpDI', () => {
-
+describe('Built-in', () => {
   let gulp = null;
   let di = null;
 
   beforeEach(() => {
     gulp = getGulpInstance();
-    di = getDiInstance(gulp, { DEBUG: false, pattern: [], someTestSetting : '1' });
+    di = getDiInstance(gulp, { DEBUG: false, pattern: [], someTestSetting: '1', parentDir: basePath() });
   });
 
   it('gulp', (done) => {
@@ -16,7 +15,7 @@ describe('GulpDI', () => {
         done();
       });
     })
-    .resolve();
+      .resolve();
     setTimeout(() => {
       gulp.start('default');
     }, 1);
@@ -27,7 +26,7 @@ describe('GulpDI', () => {
       assert.equal(Package.name, 'gulp-di');
       done();
     })
-    .resolve();
+      .resolve();
   });
 
   it('basePath', (done) => {
@@ -36,7 +35,7 @@ describe('GulpDI', () => {
       assert.equal(Package.name, 'gulp-di');
       done();
     })
-    .resolve();
+      .resolve();
   });
 
   it('options', (done) => {
@@ -45,7 +44,6 @@ describe('GulpDI', () => {
       assert.equal(this.options.someTestSetting, '1');
       done();
     })
-    .resolve();
+      .resolve();
   });
-
 });

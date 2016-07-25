@@ -1,10 +1,9 @@
 'use strict';
 
 module.exports = function RunningTasks (gulp) {
-
   const DEBUG = this.options.DEBUG;
   let log = this.byId('log', true) || console.log.bind(console);
-  let gutil = this.byId('gutil', true) || { env : { _ : process.argv }};
+  let gutil = this.byId('gutil', true) || { env: { _: process.argv } };
 
   /**
    * Adds a function returning an array of strings, containing all current
@@ -15,8 +14,8 @@ module.exports = function RunningTasks (gulp) {
    * ````js
    * module.exports = function (gulp, log, Package, runningTasks) {
    *   gulp.task('info', function () {
-   *     log('Building ' + chalk.magenta(Package.name) + ', running: ' + chalk.cyan(runningTasks().join(' ')));
-   *   });
+   *     log('Building ' + chalk.magenta(Package.name) + ', running: ' + chalk.cyan(runningTasks().join(' ')))
+   *   })
    * }
    * ````
    *
@@ -33,9 +32,7 @@ module.exports = function RunningTasks (gulp) {
     let taskNames = Object.keys(gulp.tasks);
     // Filter all available task names using gutil.env._
 
-    let cliTasks = taskNames.filter(function (name) {
-      return !!~args.indexOf(name);
-    });
+    let cliTasks = taskNames.filter((name) => args.indexOf(name) > -1);
 
     // Include the names of depending tasks
 
@@ -47,5 +44,4 @@ module.exports = function RunningTasks (gulp) {
     }
     return tasks;
   });
-
 };

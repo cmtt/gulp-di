@@ -1,10 +1,11 @@
 'use strict';
 const Stream = require('stream');
+const path = require('path');
 
 describe('GulpDI', () => {
-
   const PI = Math.PI;
   const RAD_TO_DEG = 180 / PI;
+  const INSTANCE_OPTIONS = { parentDir: basePath() };
 
   /**
    * Module declaration which assembles the "toDeg" function using PI and
@@ -24,7 +25,6 @@ describe('GulpDI', () => {
   let di = null;
 
   describe('Initialization', () => {
-
     beforeEach(() => {
       di = null;
       gulp = getGulpInstance();
@@ -32,6 +32,10 @@ describe('GulpDI', () => {
 
     it('initializes', () => {
       di = getDiInstance(gulp).resolve();
+    });
+
+    it('throws an error without gulp as first argument', () => {
+      assert.throws(() => getDiInstance());
     });
 
     it('byId throws an error when a dependency was not found', () => {
@@ -46,54 +50,52 @@ describe('GulpDI', () => {
 
     it('provide', () => {
       di = getDiInstance(gulp)
-      .provide('test', 'test');
+        .provide('test', 'test');
       assert.equal(di.byId('test'), 'test');
     });
 
     it('options.noModules', () => {
-      di = getDiInstance(gulp, { noModules : true }).resolve();
+      di = getDiInstance(gulp, { noModules: true }).resolve();
       assert.throws(() => di.byId('_'));
       assert.throws(() => di.byId('chalk'));
       assert.throws(() => di.byId('gutil'));
+      assert.throws(() => di.byId('log'));
     });
 
     it('options.noBuiltin', () => {
-      di = getDiInstance(gulp, { noBuiltin : true }).resolve();
+      di = getDiInstance(gulp, { noBuiltin: true }).resolve();
       assert.throws(() => di.byId('basePath'));
-      assert.throws(() => di.byId('log'));
       assert.throws(() => di.byId('Package'));
     });
 
     it('options.noHelp', () => {
-      di = getDiInstance(gulp, { noHelp : true }).resolve();
+      di = getDiInstance(gulp, { noHelp: true }).resolve();
       assert.ok(!gulp.tasks.help);
     });
-
   });
 
   describe('Dependency injection', () => {
-
     it('throws an error when using invalid notation', () => {
       di = getDiInstance(gulp);
       assert.throws(() => {
         di.task();
       });
       assert.throws(() => {
-        di.module('test',null);
+        di.module('test', null);
       });
       assert.throws(() => {
         di.task('null');
       });
       assert.throws(() => {
-        di.module('test',0);
+        di.module('test', 0);
       });
     });
 
     it('module', () => {
       di = getDiInstance(gulp)
-      .provide('PI', PI)
-      .provide('RAD_TO_DEG', RAD_TO_DEG)
-      .module('toDeg', toDegModule);
+        .provide('PI', PI)
+        .provide('RAD_TO_DEG', RAD_TO_DEG)
+        .module('toDeg', toDegModule);
 
       assert.ok(di.byId('toDeg'));
       assert.equal(typeof di.byId('toDeg'), 'function');
@@ -103,14 +105,43 @@ describe('GulpDI', () => {
       let pi = di.byId('PI');
 
       assert.equal(toDeg(pi), 180);
-      assert.equal(toDeg(2*pi), 360);
+      assert.equal(toDeg(2 * pi), 360);
+    });
+
+    it('module with relative and absolute paths', () => {
+      di = getDiInstance(gulp, INSTANCE_OPTIONS)
+        .module('PI', './contrib/examples/pi')
+        .module('DEG_TO_RAD', './contrib/examples/deg-to-rad')
+        .module('RAD_TO_DEG', './contrib/examples/rad-to-deg')
+        .module('toDeg', './contrib/examples/to-deg')
+        .module('toRad', path.join(__dirname, '..', 'contrib/examples/to-rad'));
+
+      assert.equal(typeof di.byId('toDeg'), 'function');
+      assert.equal(typeof di.byId('toRad'), 'function');
+      di.resolve();
+
+      let toDeg = di.byId('toDeg');
+      let toRad = di.byId('toRad');
+      let pi = di.byId('PI');
+      console.log(toDeg + '');
+      console.log(toRad + '');
+      assert.equal(toDeg(pi), 180);
+      assert.equal(toDeg(2 * pi), 360);
+      assert.equal(toRad(180), pi);
+      assert.equal(toRad(360), 2 * pi);
+    });
+
+    it('module throws an error with invalid paths', () => {
+      assert.throws(() => {
+        di = getDiInstance(gulp)
+          .module('PI', './throws/an/error');
+      });
     });
 
     it('modules', (done) => {
-      let called = [];
-      di = getDiInstance(gulp)
-      .modules('./modules')
-      .resolve();
+      di = getDiInstance(gulp, INSTANCE_OPTIONS)
+        .modules('./modules')
+        .resolve();
       let paths = di.byId('paths');
       assert.equal(typeof paths, 'object');
       done();
@@ -118,32 +149,32 @@ describe('GulpDI', () => {
 
     it('inject (chainable)', (done) => {
       di = getDiInstance(gulp)
-      .provide('PI', PI)
-      .provide('RAD_TO_DEG', RAD_TO_DEG)
-      .module('toDeg', toDegModule)
-      .resolve();
+        .provide('PI', PI)
+        .provide('RAD_TO_DEG', RAD_TO_DEG)
+        .module('toDeg', toDegModule)
+        .resolve();
       let injectCalled = 0;
       di.inject((toDeg, PI) => {
         ++injectCalled;
         assert.equal(toDeg(PI), 180);
-        assert.equal(toDeg(2*PI), 360);
+        assert.equal(toDeg(2 * PI), 360);
       })
-      .inject(() => {
-        assert.equal(injectCalled, 1);
-        done();
-      });
+        .inject(() => {
+          assert.equal(injectCalled, 1);
+          done();
+        });
     });
 
     it('inject (w/ return value)', () => {
       di = getDiInstance(gulp)
-      .provide('PI', PI)
-      .provide('RAD_TO_DEG', RAD_TO_DEG)
-      .module('toDeg', toDegModule)
-      .resolve();
+        .provide('PI', PI)
+        .provide('RAD_TO_DEG', RAD_TO_DEG)
+        .module('toDeg', toDegModule)
+        .resolve();
       let injectCalled = 0;
       let returnValue = di.inject((toDeg, PI) => {
         ++injectCalled;
-        return toDeg(2*PI);
+        return toDeg(2 * PI);
       }, true);
       assert.equal(injectCalled, 1);
       assert.equal(returnValue, 360);
@@ -151,45 +182,42 @@ describe('GulpDI', () => {
 
     it('throws an error when a missing dependency is declared', () => {
       di = getDiInstance(gulp)
-      .task(function (test) {});
+        .task(function (test) {});
       assert.throws(() => di.resolve());
     });
-
   });
 
   describe('Tasks', () => {
-
     it('task', (done) => {
       di = getDiInstance(gulp)
-      .provide('PI', PI)
-      .provide('RAD_TO_DEG', RAD_TO_DEG)
-      .module('toDeg', toDegModule)
-      .provide('test', 'test')
-      .task((test, toDeg, PI) => {
-        assert.equal(test, 'test');
-        assert.equal(toDeg(PI), 180);
-        assert.equal(toDeg(2*PI), 360);
-        done();
-      })
-      .resolve();
+        .provide('PI', PI)
+        .provide('RAD_TO_DEG', RAD_TO_DEG)
+        .module('toDeg', toDegModule)
+        .provide('test', 'test')
+        .task((test, toDeg, PI) => {
+          assert.equal(test, 'test');
+          assert.equal(toDeg(PI), 180);
+          assert.equal(toDeg(2 * PI), 360);
+          done();
+        })
+        .resolve();
     });
 
     it('task with an object', (done) => {
-      let called = [];
       di = getDiInstance(gulp)
-      .task({
-        'first' : () => {
-          done();
-        }
-      })
-      .resolve();
+        .task({
+          'first': () => {
+            done();
+          }
+        })
+        .resolve();
     });
 
     it('tasks', (done) => {
-      di = getDiInstance(gulp)
-      .modules('./modules')
-      .tasks('./tasks')
-      .resolve();
+      di = getDiInstance(gulp, INSTANCE_OPTIONS)
+        .modules('./modules')
+        .tasks('./tasks')
+        .resolve();
       di.inject((gulp) => {
         assert.ok(gulp.tasks.jshint);
         done();
@@ -204,24 +232,24 @@ describe('GulpDI', () => {
       });
 
       di = getDiInstance(gulp)
-      .task((gulp, PI, toDeg) => {
-        assert.ok(gulp);
-        gulp.task('default', () => {
-          taskCalled = true;
-          assert.equal(toDeg(2*PI), 360);
-        });
-      })
-      .module('toDeg', toDegModule)
-      .provide('PI', PI)
-      .provide('RAD_TO_DEG', RAD_TO_DEG)
-      .resolve();
+        .task((gulp, PI, toDeg) => {
+          assert.ok(gulp);
+          gulp.task('default', () => {
+            taskCalled = true;
+            assert.equal(toDeg(2 * PI), 360);
+          });
+        })
+        .module('toDeg', toDegModule)
+        .provide('PI', PI)
+        .provide('RAD_TO_DEG', RAD_TO_DEG)
+        .resolve();
 
       gulp.start('default');
     });
 
     it('can concatenate all spec files', (done) => {
       let gulp = getGulpInstance();
-      let di = getDiInstance(gulp, { lazy : false });
+      let di = getDiInstance(gulp, { parentDir: basePath(), lazy: false });
       let s = new Stream.Transform();
       let l = 0;
       let count = 0;
@@ -241,9 +269,9 @@ describe('GulpDI', () => {
            * and it might have multiple lines
            */
           return gulp.src('specs/**/*.js')
-          .pipe(concat('all_specs.js'))
-          .pipe(s);
-          // console.log('The concat command', concat);
+            .pipe(concat('all_specs.js'))
+            .pipe(s);
+        // console.log('The concat command', concat)
         });
       });
       gulp.on('stop', () => {
@@ -256,5 +284,4 @@ describe('GulpDI', () => {
       gulp.start('concat');
     });
   });
-
 });

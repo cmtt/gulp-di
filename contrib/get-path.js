@@ -7,7 +7,6 @@
  */
 
 function getPath (obj, key) {
-
   key = typeof key !== 'undefined' ? key : null;
 
   if (key === null) {

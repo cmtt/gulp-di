@@ -1,14 +1,13 @@
 'use strict';
 
 describe('parseArgument', function () {
-
   const $parseArg = require('../lib/parse-argument');
 
   let concatTask = (gulp, concat) => {
     gulp.task('concat', () => {
       return gulp
-      .src('src/**/*.txt')
-      .pipe(gulp.dest('docs'));
+        .src('src/**/*.txt')
+        .pipe(gulp.dest('docs'));
     });
   };
 
@@ -19,29 +18,27 @@ describe('parseArgument', function () {
   });
 
   it('parses the minification-safe notation', () => {
-    let info = $parseArg(['gulp','concat',concatTask]);
+    let info = $parseArg(['gulp', 'concat', concatTask]);
     assert.deepEqual(info.params, ['gulp', 'concat']);
     assert.equal(info.fn.toString(), concatTask.toString());
   });
 
-  it ('parses a function without any arguments', () => {
+  it('parses a function without any arguments', () => {
     let fn = function () {
-      console.log(new Date()+'');
+      console.log(new Date() + '');
     };
     let info = $parseArg(fn);
     assert.deepEqual(info.params, []);
     assert.equal(info.fn.toString(), fn.toString());
   });
 
-  it ('parses a function without any arguments (minification-safe notation)', () => {
-    let info = $parseArg([function () {
-
-    }]);
+  it('parses a function without any arguments (minification-safe notation)', () => {
+    let info = $parseArg([function () {}]);
     assert.deepEqual(info.params, []);
     assert.equal(typeof info.fn, 'function');
   });
 
-  it ('throws an error when no valid function was declared', () => {
+  it('throws an error when no valid function was declared', () => {
     let tests = [
       '',
       0,
@@ -55,17 +52,19 @@ describe('parseArgument', function () {
       ['   ', function () {}],
       [' ', function () {}],
       ['', function () {}],
+      [' ', function (space) {}]
     ];
     tests.forEach((test) => assert.throws(() => {
       let info = $parseArg(test);
+      assert.ok(Array.isArray(info));
     }));
   });
 
-  it ('can be used with functions and dependencies', () => {
+  it('can be used with functions and dependencies', () => {
     let dependencies = {
-      A : 'a',
-      B : 'b',
-      C : 'c'
+      A: 'a',
+      B: 'b',
+      C: 'c'
     };
 
     let abc = ['A', 'B', 'C', (A, B, C) => `${A}${B}${C}`];
@@ -88,5 +87,4 @@ describe('parseArgument', function () {
     check(cab0, 'cab');
     check(cab1, 'cab');
   });
-
 });

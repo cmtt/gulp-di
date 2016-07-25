@@ -15,7 +15,7 @@ module.exports = function (gulp, paths) {
 
     // Runs the unit tests using Mocha
 
-    return gulp.src(paths.specs, { read : false })
+    return gulp.src(paths.specs, { read: false })
     .pipe(mocha({}))
     .pipe(istanbul.writeReports());
   });

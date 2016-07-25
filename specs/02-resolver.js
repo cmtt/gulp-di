@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Resolver', () => {
-
   const Resolver = require('../lib/resolver');
   let d = null;
 
@@ -52,19 +51,18 @@ describe('Resolver', () => {
   });
 
   it('provide, byId', () => {
-    d.provide('test',[], 'test', 'string');
-    d.provide('one',['test'], 1, 'number');
+    d.provide('test', [], 'test', 'string');
+    d.provide('one', ['test'], 1, 'number');
 
-    let entry = d.byId('test');
     assert.deepEqual(d.byId('test'), {
       key: 'test',
-      params: [],
+      dependencies: [],
       payload: 'test',
       type: 'string'
     });
     assert.deepEqual(d.byId('one'), {
       key: 'one',
-      params: ['test'],
+      dependencies: ['test'],
       payload: 1,
       type: 'number'
     });
@@ -78,27 +76,27 @@ describe('Resolver', () => {
   });
 
   it('put', () => {
-    d.provide('test', [], { test : false }, 'object');
+    d.provide('test', [], { test: false }, 'object');
     d.resolve();
     assert.deepEqual(d.byId('test'), {
       key: 'test',
-      params: [],
-      payload: { test : false },
+      dependencies: [],
+      payload: { test: false },
       type: 'object'
     });
-    d.put('test', { test : true });
-    assert.deepEqual(d.byId('test').payload,{
-      test : true
+    d.put('test', { test: true });
+    assert.deepEqual(d.byId('test').payload, {
+      test: true
     });
   });
 
   it('does not resolve twice', () => {
     let queue = [];
 
-    d.provide('test0', ['test2'],'test0');
-    d.provide('test1', [],'test1');
-    d.provide('test2', ['test1'],'test2');
-    d.provide('test3', ['test0'],'test3');
+    d.provide('test0', ['test2'], 'test0');
+    d.provide('test1', [], 'test1');
+    d.provide('test2', ['test1'], 'test2');
+    d.provide('test3', ['test0'], 'test3');
 
     assert.equal(d.resolved.length, 0);
 
@@ -124,12 +122,12 @@ describe('Resolver', () => {
 
   it('provideObjectNode', (done) => {
     let object = {
-      a : 1,
-      b : 2
+      a: 1,
+      b: 2
     };
 
     Object.defineProperty(object, 'c', {
-      get : function () {
+      get: function () {
         setTimeout(done);
         return 3;
       }
@@ -144,5 +142,4 @@ describe('Resolver', () => {
     assert.equal(d.byId('b').payload, 2);
     assert.equal(d.byId('c').payload, 3);
   });
-
 });

@@ -1,20 +1,20 @@
 module.exports = (basePath) => {
   return {
-    specs : basePath('specs', '**/*.js'),
-    src : [
+    specs: basePath('specs', '**/*.js'),
+    src: [
       basePath('index.js'),
       basePath('lib/**/*.js'),
       basePath('contrib/**/*.js')
     ],
-    istanbul : [
+    istanbul: [
       basePath('index.js'),
       basePath('lib/**/*.js'),
       basePath('contrib/**/*.js')
     ],
-    docs : [
+    docs: [
       basePath('lib/**/*.js')
     ],
-    tasks : [
+    tasks: [
       basePath('tasks/**/*.js')
     ]
   };

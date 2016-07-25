@@ -1,7 +1,6 @@
 'use strict';
 
 describe('contrib', () => {
-
   const getPath = require(basePath('contrib', 'get-path'));
   const standardTask = require(basePath('contrib', 'standard-task'));
   const parseFn = require('parse-function');
@@ -11,17 +10,17 @@ describe('contrib', () => {
 
   it('getPath', () => {
     let obj = {
-      first : {
-        '1' : 1,
-        second : {
-          '2' : 2,
-          third : {
-            '3' : 3,
+      first: {
+        '1': 1,
+        second: {
+          '2': 2,
+          third: {
+            '3': 3
           }
         }
       }
     };
-    let array = [0,1,2, { test : 'test' }];
+    let array = [0, 1, 2, { test: 'test' }];
     assert.equal(typeof getPath(obj), 'object');
     assert.equal(typeof getPath(obj, 'first'), 'object');
     assert.equal(getPath(obj, 'first.1'), 1);
@@ -34,7 +33,7 @@ describe('contrib', () => {
     assert.equal(getPath(array, 0), 0);
     assert.equal(getPath(array, '1'), 1);
     assert.equal(getPath(array, '2'), 2);
-    assert.deepEqual(getPath(array, '3'), { test : 'test'});
+    assert.deepEqual(getPath(array, '3'), { test: 'test' });
     assert.equal(getPath(array, '3.test'), 'test');
   });
 
@@ -52,10 +51,9 @@ describe('contrib', () => {
   it('runningTasks', (done) => {
     let gulp = getGulpInstance();
     let di = getDiInstance(gulp, {
-      argv : [null, null, 'mocha', 'runningTasks']
+      argv: [null, null, 'mocha', 'runningTasks']
     });
     di.task((gulp, runningTasks, gutil) => {
-
       gulp.task('runningTasks', () => {
         let tasks = runningTasks();
         assert.ok(Array.isArray(tasks));
@@ -69,9 +67,8 @@ describe('contrib', () => {
   });
 
   describe('standardTask', () => {
-
     it('returns a function which injects solely gulp', () => {
-      let fn = standardTask('concat', 'templates/**/*.txt', 'public', { pretty : false });
+      let fn = standardTask('concat', 'templates/**/*.txt', 'public', { pretty: false });
       let info = parseFn(fn);
       assert.equal(info.name, 'concatTask');
       assert.deepEqual(info.args, ['gulp']);
@@ -81,7 +78,7 @@ describe('contrib', () => {
       let gulp = getGulpInstance();
       let di = getDiInstance(gulp);
 
-      let fn = standardTask('Package', 'templates/**/*.txt', 'public', { pretty : false });
+      let fn = standardTask('Package', 'templates/**/*.txt', 'public', { pretty: false });
       di.task(fn);
       di.resolve();
       assert.throws(() => {
@@ -103,7 +100,7 @@ describe('contrib', () => {
     });
 
     it('function calls are valid', () => {
-      let fn = standardTask('concat', 'templates/**/*.txt', 'public', { pretty : false });
+      let fn = standardTask('concat', 'templates/**/*.txt', 'public', { pretty: false });
       assert.equal(typeof fn, 'function');
       let fnString = fn + '';
       let filenameIndex = fnString.indexOf(basename);
@@ -134,10 +131,7 @@ describe('contrib', () => {
       });
 
       di.resolve();
-
       gulp.start('concat');
     });
-
   });
-
 });

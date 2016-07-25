@@ -21,8 +21,6 @@ global.getGulpInstance = () => {
  */
 
 global.getDiInstance = (gulp, config) => {
-  config = config || {};
-  config.parentDir = basePath();
   delete require.cache[require.resolve(diPath)];
   global.GulpDI = require(diPath);
   return new global.GulpDI(gulp, config);

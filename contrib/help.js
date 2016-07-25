@@ -1,8 +1,6 @@
 'use strict';
-/*jshint -W089 */
 
 module.exports = function HelpTask (gulp) {
-
   /**
    * Modifies the gulp.task() function and builds a list of all tasks.
    *
@@ -32,7 +30,6 @@ module.exports = function HelpTask (gulp) {
   let log = this.byId('log', true) || console.log.bind(console);
 
   const parseFn = require('parse-function');
-  const util = require('util');
   const extractComments = require('extract-comments');
   const _task = gulp.task;
   const taskInfo = {};
@@ -69,10 +66,10 @@ module.exports = function HelpTask (gulp) {
     if (typeof fn === 'function') {
       let info = parseFn(fn.toString());
       entry = {
-        name : id
+        name: id
       };
-      entry.description = util.format('Runs the %s task (no description)', id);
-      let comments = extractComments(info.body, {first : true});
+      entry.description = `Runs the ${id} task (no description)`;
+      let comments = extractComments(info.body, {first: true});
       if (comments.length) {
         let comment = comments[0];
         let lines = comment.raw
@@ -84,17 +81,17 @@ module.exports = function HelpTask (gulp) {
       }
     } else if (id === 'default') {
       entry = {
-        name : 'default',
-        description : 'Runs the default tasks: ' + deps.join(' ')
+        name: 'default',
+        description: 'Runs the default tasks: ' + deps.join(' ')
       };
     }
 
     if (entry) {
       entry.deps = deps;
       if (DEBUG) {
-        let line = ['Adding', chalk.cyan(entry.name), 'task'];
+        let line = [`Adding ${chalk.cyan(entry.name)} task`];
         if (deps.length) {
-          line.push(' - depending on ',chalk.magenta(deps.join(' ')));
+          line.push(` - depending on ${chalk.magenta(deps.join(' '))}`);
         }
         log.apply(chalk, line);
       }
@@ -109,7 +106,6 @@ module.exports = function HelpTask (gulp) {
   gulp.task('help', function () {
     /* Prints an overview over all available Gulp tasks. */
 
-    let util = require('util');
     let pad = require('pad');
     let lines = [''];
     let padding = 5;
@@ -124,12 +120,14 @@ module.exports = function HelpTask (gulp) {
     let taskIds = Object.keys(taskInfo);
     let taskLengths = taskIds.map(function (id) { return id.length; });
     let maxLength = Math.max.apply(Math, taskLengths);
-
-    for (let key in taskInfo) {
+    let keys = Object.keys(taskInfo);
+    keys.sort();
+    for (var i = 0; i < keys.length; i++) {
+      let key = keys[i];
       let entry = taskInfo[key];
       let paddingLength = maxLength;
-      let str = new Array(paddingLength+2).join(' ');
-      let descriptionLine = util.format('Runs the %s task.', key);
+      let str = new Array(paddingLength + 2).join(' ');
+      let descriptionLine = `Runs the ${key} task.`;
       if (entry.description) descriptionLine = mapDescription(str, entry.description);
       lines.push(' ' + pad(entry.name, maxLength) + paddingStr + descriptionLine.join('\n').trim());
       lines.push('');
@@ -147,7 +145,7 @@ module.exports = function HelpTask (gulp) {
      * @private
      */
 
-    function mapDescription(str, lines) {
+    function mapDescription (str, lines) {
       if (typeof lines === 'string') lines = [lines];
       return lines.map(function (line, index) {
         line = line.trim();
@@ -155,5 +153,4 @@ module.exports = function HelpTask (gulp) {
       });
     }
   });
-
 };

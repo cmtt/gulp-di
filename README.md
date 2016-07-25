@@ -481,6 +481,12 @@ let di = require('gulp-di')(gulp, {
 
 ## Changelog
 
+0.0.4 - 0?/??/2016
+
+  - task() and module() may take absolute or relative paths
+  - using a fork of [node-introspect](https://github.com/orzarchi/node-introspect.git) instead of [parse-function](https://github.com/tunnckoCore/parse-function)
+  - adopting [https://github.com/Flet/semistandard](semistandard) style
+
 0.0.33 - 05/03/2016
 
   - Updating depencendies and adapting to changes
