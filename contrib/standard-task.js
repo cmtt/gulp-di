@@ -58,7 +58,7 @@ function standardTask (name, src, dest) {
 
   gulp.task("${name}", () => {
      /**
-      * ${name} task, declared at ${filename}${line ? ':' + line  : ''}
+      * ${name} task, declared at ${filename}${line ? ':' + line : ''}
       */
 
     let plugin = this.byId("${name}");

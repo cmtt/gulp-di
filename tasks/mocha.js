@@ -19,5 +19,4 @@ module.exports = function (gulp, paths) {
     .pipe(mocha({}))
     .pipe(istanbul.writeReports());
   });
-
 };

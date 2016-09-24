@@ -48,9 +48,18 @@ describe('GulpDI', () => {
       assert.equal(info, null);
     });
 
+    it('byId throws an error when a undesolved dependency was requested', () => {
+      assert.throws(() => {
+        di = getDiInstance(gulp, INSTANCE_OPTIONS)
+          .module('PI', './contrib/examples/pi')
+          .byId('PI');
+      });
+    });
+
     it('provide', () => {
       di = getDiInstance(gulp)
-        .provide('test', 'test');
+        .provide('test', 'test')
+        .resolve();
       assert.equal(di.byId('test'), 'test');
     });
 
@@ -97,12 +106,13 @@ describe('GulpDI', () => {
         .provide('RAD_TO_DEG', RAD_TO_DEG)
         .module('toDeg', toDegModule);
 
-      assert.ok(di.byId('toDeg'));
-      assert.equal(typeof di.byId('toDeg'), 'function');
       di.resolve();
 
       let toDeg = di.byId('toDeg');
       let pi = di.byId('PI');
+      assert.ok(toDeg);
+      assert.equal(typeof toDeg, 'function');
+      assert.equal(typeof pi, 'number');
 
       assert.equal(toDeg(pi), 180);
       assert.equal(toDeg(2 * pi), 360);
@@ -116,15 +126,13 @@ describe('GulpDI', () => {
         .module('toDeg', './contrib/examples/to-deg')
         .module('toRad', path.join(__dirname, '..', 'contrib/examples/to-rad'));
 
-      assert.equal(typeof di.byId('toDeg'), 'function');
-      assert.equal(typeof di.byId('toRad'), 'function');
       di.resolve();
 
       let toDeg = di.byId('toDeg');
       let toRad = di.byId('toRad');
       let pi = di.byId('PI');
-      console.log(toDeg + '');
-      console.log(toRad + '');
+      assert.equal(typeof toDeg, 'function');
+      assert.equal(typeof toRad, 'function');
       assert.equal(toDeg(pi), 180);
       assert.equal(toDeg(2 * pi), 360);
       assert.equal(toRad(180), pi);
@@ -219,7 +227,7 @@ describe('GulpDI', () => {
         .tasks('./tasks')
         .resolve();
       di.inject((gulp) => {
-        assert.ok(gulp.tasks.jshint);
+        assert.ok(gulp.tasks.jshint, 'has "jshint" task');
         done();
       });
     });
