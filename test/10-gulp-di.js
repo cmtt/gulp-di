@@ -228,7 +228,7 @@ describe('GulpDI', () => {
         .tasks('./tasks')
         .resolve();
       di.inject((gulp) => {
-        assert.ok(gulp.tasks.jshint, 'has "jshint" task');
+        assert.ok(gulp.tasks.semistandard, 'has "semistandard" task');
         done();
       });
     });

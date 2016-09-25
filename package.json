@@ -4,7 +4,7 @@
   "description": "Dependency injection framework for the Gulp streaming build system",
   "main": "index.js",
   "scripts": {
-    "test": "gulp mocha",
+    "test": "gulp semistandard mocha",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "author": {
@@ -39,13 +39,12 @@
     "gulp": "*",
     "gulp-concat": "^2.6.0",
     "gulp-istanbul": "^1.1.1",
-    "gulp-jshint": "^2.0.1",
     "gulp-load-plugins": "^1.3.0",
     "gulp-mocha": "^3.0.1",
     "gulp-rename": "^1.2.2",
+    "gulp-semistandard": "git+https://github.com/cmtt/gulp-semistandard.git",
     "gulp-util": "^3.0.7",
     "introspect": "git+https://github.com/orzarchi/node-introspect.git",
-    "jshint": "^2.9.3",
     "lodash": "^4.16.1",
     "pad": "^1.0.1",
     "parse-function": "^2.3.2",

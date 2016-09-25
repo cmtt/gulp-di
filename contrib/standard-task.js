@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 'use strict';
 
 const parseStack = require('parse-stack');

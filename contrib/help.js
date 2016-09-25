@@ -16,8 +16,8 @@ module.exports = function HelpTask (gulp) {
    *   // Copies ./README.md to ./tmp
    *
    *   return gulp.src('./README.md')
-   *   .pipe(gulp.dest('./tmp'));
-   * };
+   *   .pipe(gulp.dest('./tmp'))
+   * }
    * ````
    *
    * This module needs to be injected before each successive require('gulp')
@@ -73,10 +73,10 @@ module.exports = function HelpTask (gulp) {
       if (comments.length) {
         const comment = comments[0];
         const lines = comment.raw
-        .split(RGX_LF)
-        .map(function (line) {
-          return line.replace(/(\ )*(\*|\/+)/g, '');
-        });
+          .split(RGX_LF)
+          .map(function (line) {
+            return line.replace(/( )*(\*|\/+)/g, '');
+          });
         entry.description = lines;
       }
     } else if (id === 'default') {
