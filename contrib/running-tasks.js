@@ -2,8 +2,8 @@
 
 module.exports = function RunningTasks (gulp) {
   const DEBUG = this.options.DEBUG;
-  let log = this.byId('log', true) || console.log.bind(console);
-  let gutil = this.byId('gutil', true) || { env: { _: process.argv } };
+  const log = this.byId('log', true) || console.log.bind(console);
+  const gutil = this.byId('gutil', true) || { env: { _: process.argv } };
 
   /**
    * Adds a function returning an array of strings, containing all current
@@ -27,18 +27,19 @@ module.exports = function RunningTasks (gulp) {
   }
 
   this.provide('runningTasks', () => {
-    let tasks = [];
-    let args = this.options.argv || gutil.env._;
-    let taskNames = Object.keys(gulp.tasks);
+    const args = this.options.argv || gutil.env._;
+    const taskNames = Object.keys(gulp.tasks);
     // Filter all available task names using gutil.env._
 
-    let cliTasks = taskNames.filter((name) => args.indexOf(name) > -1);
+    const cliTasks = taskNames.filter((name) => args.indexOf(name) > -1);
+
+    let tasks = [];
 
     // Include the names of depending tasks
 
     for (let i = 0, l = cliTasks.length; i < l; i++) {
-      let name = cliTasks[i];
-      let task = gulp.tasks[name];
+      const name = cliTasks[i];
+      const task = gulp.tasks[name];
       tasks = tasks.concat(task.dep);
       tasks.push(task.name);
     }

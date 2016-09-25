@@ -1,4 +1,6 @@
 'use strict';
+const pad = require('pad');
+const LINE_PADDING = 5;
 
 module.exports = function HelpTask (gulp) {
   /**
@@ -25,9 +27,9 @@ module.exports = function HelpTask (gulp) {
    * experimental.
    */
 
-  let Package = this.byId('Package', true) || {};
-  let chalk = this.byId('chalk', true);
-  let log = this.byId('log', true) || console.log.bind(console);
+  const Package = this.byId('Package', true) || {};
+  const chalk = this.byId('chalk', true);
+  const log = this.byId('log', true) || console.log.bind(console);
 
   const parseFn = require('parse-function');
   const extractComments = require('extract-comments');
@@ -54,7 +56,7 @@ module.exports = function HelpTask (gulp) {
    */
 
   gulp.task = function (id, deps, fn) {
-    let args = [].slice.apply(arguments);
+    const args = [].slice.apply(arguments);
 
     if (typeof deps === 'function') {
       fn = arguments[1];
@@ -64,15 +66,13 @@ module.exports = function HelpTask (gulp) {
     let entry = null;
 
     if (typeof fn === 'function') {
-      let info = parseFn(fn.toString());
-      entry = {
-        name: id
-      };
+      const info = parseFn(fn.toString());
+      entry = { name: id };
       entry.description = `Runs the ${id} task (no description)`;
-      let comments = extractComments(info.body, {first: true});
+      const comments = extractComments(info.body, {first: true});
       if (comments.length) {
-        let comment = comments[0];
-        let lines = comment.raw
+        const comment = comments[0];
+        const lines = comment.raw
         .split(RGX_LF)
         .map(function (line) {
           return line.replace(/(\ )*(\*|\/+)/g, '');
@@ -106,10 +106,8 @@ module.exports = function HelpTask (gulp) {
   gulp.task('help', function () {
     /* Prints an overview over all available Gulp tasks. */
 
-    let pad = require('pad');
     let lines = [''];
-    let padding = 5;
-    let paddingStr = new Array(padding).join(' ');
+    const paddingStr = new Array(LINE_PADDING).join(' ');
 
     lines.push(' ' + Package.name + ' ' + Package.version, '');
 
@@ -117,16 +115,16 @@ module.exports = function HelpTask (gulp) {
       lines.push(' ' + Package.description, '');
     }
 
-    let taskIds = Object.keys(taskInfo);
-    let taskLengths = taskIds.map(function (id) { return id.length; });
-    let maxLength = Math.max.apply(Math, taskLengths);
-    let keys = Object.keys(taskInfo);
+    const taskIds = Object.keys(taskInfo);
+    const taskLengths = taskIds.map(function (id) { return id.length; });
+    const maxLength = Math.max.apply(Math, taskLengths);
+    const keys = Object.keys(taskInfo);
     keys.sort();
     for (var i = 0; i < keys.length; i++) {
-      let key = keys[i];
-      let entry = taskInfo[key];
-      let paddingLength = maxLength;
-      let str = new Array(paddingLength + 2).join(' ');
+      const key = keys[i];
+      const entry = taskInfo[key];
+      const paddingLength = maxLength;
+      const str = new Array(paddingLength + 2).join(' ');
       let descriptionLine = `Runs the ${key} task.`;
       if (entry.description) descriptionLine = mapDescription(str, entry.description);
       lines.push(' ' + pad(entry.name, maxLength) + paddingStr + descriptionLine.join('\n').trim());

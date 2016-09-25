@@ -1,3 +1,5 @@
 'use strict';
 
-module.exports = () => Math.PI;
+module.exports = function () {
+  return Math.PI;
+};

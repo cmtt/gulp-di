@@ -18,16 +18,16 @@ function getPath (obj, key) {
   /**
    * Returns a payload or a nested property of any provided payload.
    * @method step
-   * @private
    * @param {*} object
    * @param {string[]} depPath
+   * @private
    */
 
   function step (object, depPath) {
     return depPath.length ? step(object[depPath.shift()], depPath) : object;
   }
 
-  let depPath = key.split(/\./g);
+  const depPath = key.split(/\./g);
   return step(obj, depPath);
 }
 

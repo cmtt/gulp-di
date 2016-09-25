@@ -115,7 +115,7 @@ describe('contrib', () => {
       let gulp = getGulpInstance();
       let di = getDiInstance(gulp);
 
-      let fn = standardTask('concat', 'specs/**/*.js', 'trash', 'all.js');
+      let fn = standardTask('concat', 'test/**/*.js', 'trash', 'all.js');
       let destPath = basePath('trash', 'all.js');
 
       di.task(fn);

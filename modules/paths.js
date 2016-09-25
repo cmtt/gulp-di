@@ -1,6 +1,6 @@
 module.exports = (basePath) => {
   return {
-    specs: basePath('specs', '**/*.js'),
+    mocha: basePath('test', '**/*.js'),
     src: [
       basePath('index.js'),
       basePath('lib/**/*.js'),

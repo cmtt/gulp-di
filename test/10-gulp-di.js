@@ -133,6 +133,7 @@ describe('GulpDI', () => {
       let pi = di.byId('PI');
       assert.equal(typeof toDeg, 'function');
       assert.equal(typeof toRad, 'function');
+
       assert.equal(toDeg(pi), 180);
       assert.equal(toDeg(2 * pi), 360);
       assert.equal(toRad(180), pi);
@@ -276,7 +277,7 @@ describe('GulpDI', () => {
            * This task comment should appear in this test
            * and it might have multiple lines
            */
-          return gulp.src('specs/**/*.js')
+          return gulp.src('test/**/*.js')
             .pipe(concat('all_specs.js'))
             .pipe(s);
         // console.log('The concat command', concat)
