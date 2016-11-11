@@ -1,10 +1,10 @@
 {
   "name": "gulp-di",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Dependency injection framework for the Gulp streaming build system",
   "main": "index.js",
   "scripts": {
-    "test": "gulp semistandard mocha",
+    "test": "./node_modules/gulp-cli/bin/gulp.js semistandard mocha",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "author": {
@@ -36,7 +36,8 @@
     "chalk": "^1.1.3",
     "extract-comments": "^0.10.1",
     "findup-sync": "^0.4.3",
-    "gulp": "^3.9.1",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-cli": "^1.2.2",
     "gulp-concat": "^2.6.0",
     "gulp-istanbul": "^1.1.1",
     "gulp-load-plugins": "^1.4.0",

@@ -17,20 +17,21 @@ module.exports = (Package, basePath, chalk, log, gulp, taskInfo, gutil, runningT
 
   // You can declare multiple gulp tasks in each file.
 
-  gulp.task('task-info', () => {
+  gulp.task('task-info', (cb) => {
     /**
      * Example logging task information from contrib/help.js
      */
 
     console.log(`${Package.name}\'s task information: `);
     console.log(taskInfo);
+    cb();
   });
 
-  gulp.task('a', () => {});
-  gulp.task('b', ['c', 'a'], () => {});
-  gulp.task('c', () => {});
+  gulp.task('a', (cb) => cb());
+  gulp.task('c', (cb) => cb());
+  gulp.task('b', gulp.series('a', 'c'));
 
-  gulp.task('info', () => {
+  gulp.task('info', (cb) => {
     /**
      * Demonstrates logging currently running tasks.
      *
@@ -52,5 +53,6 @@ module.exports = (Package, basePath, chalk, log, gulp, taskInfo, gutil, runningT
       chalk.cyan(runningTasks().join(', '))
     ];
     log(line.join(' '));
+    cb();
   });
 };

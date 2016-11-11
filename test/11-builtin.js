@@ -10,40 +10,44 @@ describe('Built-in', () => {
   });
 
   it('gulp', (done) => {
-    di.task((Package) => {
-      gulp.task('default', () => {
-        done();
-      });
+    di
+    .task((Package) => {
+      gulp.task('default', (cb) => cb());
     })
-      .resolve();
-    setTimeout(() => {
-      gulp.start('default');
-    }, 1);
+    .resolve();
+
+     gulp.series('default', (cb) => {
+       cb();
+       done();
+     })();
   });
 
   it('Package', (done) => {
-    di.task((Package) => {
+    di
+    .task((Package) => {
       assert.equal(Package.name, 'gulp-di');
       done();
     })
-      .resolve();
+    .resolve();
   });
 
   it('basePath', (done) => {
-    di.task((basePath) => {
+    di
+    .task((basePath) => {
       let Package = require(basePath('package.json'));
       assert.equal(Package.name, 'gulp-di');
       done();
     })
-      .resolve();
+    .resolve();
   });
 
   it('options', (done) => {
-    di.task(function (basePath) {
+    di
+    .task(function (basePath) {
       assert.equal(typeof this.options, 'object');
       assert.equal(this.options.someTestSetting, '1');
       done();
     })
-      .resolve();
+    .resolve();
   });
 });

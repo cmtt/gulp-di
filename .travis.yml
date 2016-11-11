@@ -19,4 +19,4 @@ before_script:
 
 after_success: 'npm run coveralls'
 
-script: gulp
+script: npm test

@@ -14,8 +14,8 @@
 
 const gulp = require('gulp');
 let di = require('./')(gulp, {
-  // DEBUG: true
-  // lazy : false
+  DEBUG: true,
+  lazy : false
 })
 .modules('./modules')
 .tasks('./tasks')

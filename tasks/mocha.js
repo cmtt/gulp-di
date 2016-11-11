@@ -9,14 +9,13 @@ module.exports = function (gulp, paths) {
       .pipe(istanbul.hookRequire());
   });
 
-  gulp.task('mocha', ['pre-test'], () => {
+  gulp.task('mocha', gulp.series('pre-test', () => {
     const mocha = this.byId('mocha');
     const istanbul = this.byId('istanbul');
-
     // Runs the unit tests using Mocha
 
     return gulp.src(paths.mocha, { read: false })
     .pipe(mocha({}))
     .pipe(istanbul.writeReports());
-  });
+  }));
 };

@@ -12,8 +12,15 @@ global.GulpDI = require(diPath);
 
 global.getGulpInstance = () => {
   delete require.cache[require.resolve('gulp')];
-  delete require.cache[require.resolve('gulp-util')];
-  return require('gulp');
+  delete require.cache[require.resolve('undertaker')];
+  delete require.cache[require.resolve('undertaker-registry')];
+  delete require.cache[require.resolve('last-run')];
+  const gulp = require('gulp');
+  gulp.on('error', (e) => {
+    console.log(e.error);
+    throw new Error(`Gulp runtime error:\n${JSON.stringify(e)}\n`);
+  });
+  return gulp;
 };
 
 /**
@@ -24,4 +31,10 @@ global.getDiInstance = (gulp, config) => {
   delete require.cache[require.resolve(diPath)];
   global.GulpDI = require(diPath);
   return new global.GulpDI(gulp, config);
+};
+
+global.hasTask = (gulp, taskId) => {
+  const registry = gulp._registry;
+  const tasks = registry.tasks();
+  return taskId in tasks;
 };
