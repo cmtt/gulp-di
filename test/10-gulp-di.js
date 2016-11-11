@@ -207,6 +207,7 @@ describe('GulpDI', () => {
           assert.equal(test, 'test');
           assert.equal(toDeg(PI), 180);
           assert.equal(toDeg(2 * PI), 360);
+
           done();
         })
         .resolve();
