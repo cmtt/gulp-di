@@ -1,7 +1,6 @@
 'use strict';
-module.exports = function (gulp, paths) {
+module.exports = function (gulp, paths, mocha, istanbul) {
   gulp.task('pre-test', () => {
-    const istanbul = this.byId('istanbul');
     return gulp.src(paths.istanbul)
       // Covering files
       .pipe(istanbul())
@@ -10,8 +9,6 @@ module.exports = function (gulp, paths) {
   });
 
   gulp.task('mocha', gulp.series('pre-test', () => {
-    const mocha = this.byId('mocha');
-    const istanbul = this.byId('istanbul');
     // Runs the unit tests using Mocha
 
     return gulp.src(paths.mocha, { read: false })
