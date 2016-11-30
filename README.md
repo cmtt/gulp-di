@@ -484,8 +484,9 @@ let di = require('gulp-di')(gulp, {
 0.1.0 - 00/??/201?
 
   - Adapting to changes in gulp 4.0 (#9)
+  - Removing CI tests for older Node.js versions below 5.x
 
-0.0.4 - 0?/??/2016
+0.0.4 - 11/11/2016
 
   - task() and module() may take absolute or relative paths
   - using a fork of [node-introspect](https://github.com/orzarchi/node-introspect.git) instead of [parse-function](https://github.com/tunnckoCore/parse-function)

@@ -50,12 +50,10 @@
     "pad": "^1.0.2",
     "parse-function": "^2.3.2",
     "parse-stack": "^0.1.4",
-    "require-dir": "^0.3.1",
-    "undertaker-registry": "^1.0.0"
+    "require-dir": "^0.3.1"
   },
   "devDependencies": {
-    "coveralls": "^2.11.14",
-    "undertaker": "^1.0.0"
+    "coveralls": "^2.11.14"
   },
   "semistandard": {
     "globals": [
