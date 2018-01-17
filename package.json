@@ -33,26 +33,26 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "chalk": "^1.1.3",
+    "chalk": "^2.3.0",
     "extract-comments": "^0.10.1",
-    "findup-sync": "^0.4.3",
+    "findup-sync": "^2.0.0",
     "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.0",
-    "gulp-istanbul": "^1.1.1",
-    "gulp-load-plugins": "^1.4.0",
-    "gulp-mocha": "^3.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-istanbul": "^1.1.3",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-mocha": "^5.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-semistandard": "^1.0.0",
-    "gulp-util": "^3.0.7",
+    "gulp-util": "^3.0.8",
     "introspect": "git+https://github.com/orzarchi/node-introspect.git",
-    "lodash": "^4.16.6",
-    "pad": "^1.0.2",
+    "lodash": "^4.17.4",
+    "pad": "^2.0.3",
     "parse-function": "^2.3.2",
     "parse-stack": "^0.1.4",
-    "require-dir": "^0.3.1"
+    "require-dir": "^0.3.2"
   },
   "devDependencies": {
-    "coveralls": "^2.11.14"
+    "coveralls": "^3.0.0"
   },
   "semistandard": {
     "globals": [
