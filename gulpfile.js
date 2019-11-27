@@ -15,12 +15,11 @@
 const gulp = require('gulp');
 let di = require('./')(gulp, {
   // DEBUG: true
-  // lazy : false
 })
 .modules('./modules')
 .tasks('./tasks')
 // .task(function (noDef) {
-//   // This should fail if you un-comment it
+//   // This should fail if you un-comment it as `noDef` hasn't been defined.
 // })
 .resolve();
 

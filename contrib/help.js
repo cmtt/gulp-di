@@ -78,14 +78,9 @@ module.exports = function HelpTask (gulp) {
             return line.replace(/( )*(\*|\/+)/g, '');
           });
         entry.description = lines;
+        fn.description = lines;
       }
-    } else if (id === 'default') {
-      entry = {
-        name: 'default',
-        description: 'Runs the default tasks: ' + deps.join(' ')
-      };
     }
-
     if (entry) {
       entry.deps = deps;
       if (DEBUG) {
@@ -97,13 +92,12 @@ module.exports = function HelpTask (gulp) {
       }
       taskInfo[id] = entry;
     }
-
     return _task.apply(gulp, args);
   };
 
   // Registers the "help" task.
 
-  gulp.task('help', function () {
+  function HelpTask (done) {
     /* Prints an overview over all available Gulp tasks. */
 
     let lines = [''];
@@ -133,6 +127,7 @@ module.exports = function HelpTask (gulp) {
 
     lines.forEach((line) => console.log(line));
 
+    done();
     /**
      * Maps the given array of comment lines by prepending whitespace if
      * necessary.
@@ -150,5 +145,8 @@ module.exports = function HelpTask (gulp) {
         return index ? str + paddingStr + line : line;
       });
     }
-  });
+  }
+
+  HelpTask.description = 'Displays initial help.';
+  gulp.task('help', HelpTask);
 };

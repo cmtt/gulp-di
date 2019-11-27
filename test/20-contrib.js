@@ -40,12 +40,11 @@ describe('contrib', () => {
   it('help', (done) => {
     let gulp = getGulpInstance();
     let di = getDiInstance(gulp, { DEBUG: true });
-    gulp.task('default', ['help']);
-    gulp.on('stop', () => {
-      done();
-    });
     di.resolve();
-    gulp.start('default');
+    gulp.series('help', (cb) => {
+      cb();
+      done();
+    })();
   });
 
   it('runningTasks', (done) => {
@@ -54,16 +53,17 @@ describe('contrib', () => {
       argv: [null, null, 'mocha', 'runningTasks']
     });
     di.task((gulp, runningTasks, gutil) => {
-      gulp.task('runningTasks', () => {
+      gulp.task('runningTasks', (cb) => {
         let tasks = runningTasks();
         assert.ok(Array.isArray(tasks));
+        cb();
       });
     });
-    gulp.on('stop', () => {
-      done();
-    });
     di.resolve();
-    gulp.start('runningTasks');
+    gulp.series('runningTasks', (cb) => {
+      cb();
+      done();
+    })();
   });
 
   describe('standardTask', () => {
@@ -120,7 +120,9 @@ describe('contrib', () => {
 
       di.task(fn);
 
-      gulp.on('stop', () => {
+      di.resolve();
+      gulp.series('concat', (cb) => {
+        cb();
         assert.ok(fs.existsSync(destPath));
         try {
           fs.unlinkSync(destPath);
@@ -128,10 +130,7 @@ describe('contrib', () => {
           console.log(`Could not remove ${destPath}: ${e.message}`);
         }
         done();
-      });
-
-      di.resolve();
-      gulp.start('concat');
+      })();
     });
   });
 });

@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = (gulp, Package, basePath) => {
-  gulp.task('default', ['mocha', 'semistandard']);
+  gulp.task('default', gulp.parallel('mocha', 'semistandard'));
 };

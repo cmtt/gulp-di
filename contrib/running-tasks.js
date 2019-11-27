@@ -27,22 +27,11 @@ module.exports = function RunningTasks (gulp) {
   }
 
   this.provide('runningTasks', () => {
+    const registry = gulp._registry;
     const args = this.options.argv || gutil.env._;
-    const taskNames = Object.keys(gulp.tasks);
+    const taskNames = Object.keys(registry.tasks());
     // Filter all available task names using gutil.env._
-
-    const cliTasks = taskNames.filter((name) => args.indexOf(name) > -1);
-
-    let tasks = [];
-
-    // Include the names of depending tasks
-
-    for (let i = 0, l = cliTasks.length; i < l; i++) {
-      const name = cliTasks[i];
-      const task = gulp.tasks[name];
-      tasks = tasks.concat(task.dep);
-      tasks.push(task.name);
-    }
-    return tasks;
+    const cliTasks = taskNames.filter((name) => args.indexOf(name) !== -1);
+    return cliTasks;
   });
 };

@@ -26,8 +26,8 @@ describe('GulpDI', () => {
 
   describe('Initialization', () => {
     beforeEach(() => {
-      di = null;
       gulp = getGulpInstance();
+      di = null;
     });
 
     it('initializes', () => {
@@ -79,7 +79,7 @@ describe('GulpDI', () => {
 
     it('options.noHelp', () => {
       di = getDiInstance(gulp, { noHelp: true }).resolve();
-      assert.ok(!gulp.tasks.help);
+      assert.ok(!hasTask(gulp, 'help'));
     });
   });
 
@@ -229,24 +229,22 @@ describe('GulpDI', () => {
         .tasks('./tasks')
         .resolve();
       di.inject((gulp) => {
-        assert.ok(gulp.tasks.semistandard, 'has "semistandard" task');
+        assert.ok(hasTask(gulp, 'semistandard'), 'has "semistandard" task');
         done();
       });
     });
 
     it('includes gulp and can run a task', (done) => {
       let taskCalled = false;
-      gulp.on('stop', () => {
-        assert.equal(taskCalled, true);
-        done();
-      });
 
       di = getDiInstance(gulp)
         .task((gulp, PI, toDeg) => {
           assert.ok(gulp);
-          gulp.task('default', () => {
+
+          gulp.task('default', (cb) => {
             taskCalled = true;
             assert.equal(toDeg(2 * PI), 360);
+            cb();
           });
         })
         .module('toDeg', toDegModule)
@@ -254,11 +252,14 @@ describe('GulpDI', () => {
         .provide('RAD_TO_DEG', RAD_TO_DEG)
         .resolve();
 
-      gulp.start('default');
+      gulp.series('default', (cb) => {
+        assert.equal(taskCalled, true);
+        cb();
+        done();
+      })();
     });
 
     it('can concatenate all spec files', (done) => {
-      let gulp = getGulpInstance();
       let di = getDiInstance(gulp, { parentDir: basePath(), lazy: false });
       let s = new Stream.Transform();
       let l = 0;
@@ -284,14 +285,14 @@ describe('GulpDI', () => {
         // console.log('The concat command', concat)
         });
       });
-      gulp.on('stop', () => {
+      di.resolve();
+      gulp.series('concat', (cb) => {
         assert.ok(ended, 'Stream was closed');
         assert.ok(l > 0, 'Read more than zero bytes');
         assert.equal(count, 1, 'Solely one file written');
+        cb();
         done();
-      });
-      di.resolve();
-      gulp.start('concat');
+      })();
     });
   });
 });
