@@ -12,7 +12,7 @@ module.exports = (Package, basePath, chalk, log, gulp, taskInfo, gutil, runningT
      */
 
     console.log(`${Package.name}s location: `, basePath());
-    console.log(`this file\'s location: ${basePath('tasks', path.basename(__filename))}`);
+    console.log(`this file's location: ${basePath('tasks', path.basename(__filename))}`);
   });
 
   // You can declare multiple gulp tasks in each file.
@@ -22,7 +22,7 @@ module.exports = (Package, basePath, chalk, log, gulp, taskInfo, gutil, runningT
      * Example logging task information from contrib/help.js
      */
 
-    console.log(`${Package.name}\'s task information: `);
+    console.log(`${Package.name}'s task information: `);
     console.log(taskInfo);
     cb();
   });
