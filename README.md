@@ -481,7 +481,7 @@ let di = require('gulp-di')(gulp, {
 
 ## Changelog
 
-0.1.0 - 00/??/201?
+0.1.0 - 11/27/2019
 
   - Adapting to changes in gulp 4.0 (#9)
   - Removing CI tests for older Node.js versions below 5.x
